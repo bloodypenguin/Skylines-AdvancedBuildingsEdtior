@@ -63,7 +63,14 @@ namespace AdvancedBuildingsEditor
             clearSpecialPointsButton.relativePosition = new Vector3(5, 92);
             clearSpecialPointsButton.eventClicked += (component, param) =>
             {
-                Scripts.ClearSpecialPoints();
+                Scripts.ClearProps(true);
+            };
+
+            var clearPropsButton = UIUtil.CreateButton(this, "Clear props");
+            clearPropsButton.relativePosition = new Vector3(5, 118);
+            clearPropsButton.eventClicked += (component, param) =>
+            {
+                Scripts.ClearProps();
             };
         }
     }

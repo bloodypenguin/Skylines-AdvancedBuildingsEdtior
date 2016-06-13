@@ -27,7 +27,7 @@ namespace AdvancedBuildingsEditor
         {
             UIButton b = (UIButton)component.AddUIComponent(typeof(UIButton));
             b.text = t;
-            b.width = 200;
+            b.width = 220;
             b.height = 24;
             b.normalBgSprite = "ButtonMenu";
             b.disabledBgSprite = "ButtonMenuDisabled";

@@ -15,7 +15,7 @@ namespace AdvancedBuildingsEditor.Detours
     {
 
         [RedirectMethod]
-        public void OnLoad()
+        public new void OnLoad()
         {
             this.CloseEverything();
             var saveList = this.Find<UIListBox>("SaveList");

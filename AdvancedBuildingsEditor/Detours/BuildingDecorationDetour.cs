@@ -73,7 +73,7 @@ namespace AdvancedBuildingsEditor.Detours
 
         public static void LoadSpecialPoints(BuildingInfo info, ushort buildingID, ref Building data)
         {
-            Scripts.ClearSpecialPoints();
+            Scripts.ClearProps(true);
             var ai = info.m_buildingAI as DepotAI;
             if (ai == null)
             {
@@ -96,7 +96,6 @@ namespace AdvancedBuildingsEditor.Detours
                     }
                 };
             }
-            ushort counter = 0;
             for (int index = 0; index < mSpawnPoints.Length; ++index)
             {
                 if (ai.m_canInvertTarget)

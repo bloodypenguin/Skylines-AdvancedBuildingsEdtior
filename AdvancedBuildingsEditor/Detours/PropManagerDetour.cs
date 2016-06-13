@@ -8,7 +8,7 @@ namespace AdvancedBuildingsEditor.Detours
     {
         //TODO(earalov): add similar detour for tree manager
         [RedirectMethod]
-        public bool CheckLimits()
+        public new bool CheckLimits()
         {
             //begin mod
             if (BuildingDecorationDetour.DisableLimits)
@@ -18,7 +18,7 @@ namespace AdvancedBuildingsEditor.Detours
             var propTool = ToolsModifierControl.GetCurrentTool<PropTool>();
             if (propTool != null)
             {
-                if (SpecialPoints.IsSpecialProp(propTool.m_prefab))
+                if (SpecialPoints.IsSpecialPoint(propTool.m_prefab))
                 {
                     return true;
                 }

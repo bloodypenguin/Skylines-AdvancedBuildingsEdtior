@@ -7,7 +7,7 @@
         public const string TruckSpawnPosition = "Truck Spawn Point";
         public const string TruckDespawnPosition = "Truck Despawn Point";
 
-        public static bool IsSpecialProp(PropInfo info)
+        public static bool IsSpecialPoint(PropInfo info)
         {
             if (info == null)
             {

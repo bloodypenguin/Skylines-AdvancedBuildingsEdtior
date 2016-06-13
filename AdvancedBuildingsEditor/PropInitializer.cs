@@ -36,11 +36,16 @@ namespace AdvancedBuildingsEditor
             }
             try
             {
-//                if (SimulationManager.instance.m_metaData.m_updateMode != SimulationManager.UpdateMode.LoadAsset &&
-//                    SimulationManager.instance.m_metaData.m_updateMode != SimulationManager.UpdateMode.NewAsset)
-//                {
-//                    return;
-//                }
+                if (!SimulationManager.exists || (SimulationManager.instance.m_metaData == null))
+                {
+                    return;
+                }
+                if (SimulationManager.instance.m_metaData.m_updateMode != SimulationManager.UpdateMode.LoadAsset &&
+                    SimulationManager.instance.m_metaData.m_updateMode != SimulationManager.UpdateMode.NewAsset)
+                {
+                    _isInitialized = true;
+                    Destroy(this);
+                }
                 var parent = GameObject.Find(SimulationManager.instance.m_metaData.m_environment + " Collections");
                 foreach (var t in from Transform t in parent.transform where t.name == "Common" select t)
                 {

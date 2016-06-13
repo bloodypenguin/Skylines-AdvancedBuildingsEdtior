@@ -41,7 +41,7 @@ namespace AdvancedBuildingsEditor
             }
         }
 
-        public static void ClearSpecialPoints()
+        public static void ClearProps(bool specialPoints = false)
         {
             var instance = PropManager.instance;
             BuildingDecorationDetour.SpecialPoints = new Dictionary<ushort, SpecialPointType>();
@@ -52,8 +52,8 @@ namespace AdvancedBuildingsEditor
                 {
                     continue;
                 }
-                var propInfo = propInstance.Info;
-                if (SpecialPoints.IsSpecialProp(propInfo))
+                var isSpecialPoint = SpecialPoints.IsSpecialPoint(propInstance.Info);
+                if (isSpecialPoint == specialPoints)
                 {
                     instance.ReleaseProp(index1);
                 }
@@ -73,7 +73,7 @@ namespace AdvancedBuildingsEditor
                     continue;
                 }
                 var propInfo = propInstance.Info;
-                if (SpecialPoints.IsSpecialProp(propInfo))
+                if (SpecialPoints.IsSpecialPoint(propInfo))
                 {
                     BuildingDecorationDetour.SpecialPoints.Add(index1, SpecialPoints.GetSpecialPointType(propInfo));
                 }
