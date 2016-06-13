@@ -142,15 +142,22 @@ namespace AdvancedBuildingsEditor.Detours
         [RedirectMethod]
         public static void SaveDecorations(BuildingInfo target)
         {
-            Building data = new Building();
-            data.m_position = new Vector3(0.0f, 60f, 0.0f);
-            data.Width = target.m_cellWidth;
-            data.Length = target.m_cellLength;
-            BuildingDecoration.SavePaths(target, (ushort)0, ref data);
-            SaveProps(target, (ushort)0, ref data);
-            //begin mod
-            SaveSubBuildings(target, (ushort)0, ref data);
-            //end mod
+            try
+            {
+                Building data = new Building();
+                data.m_position = new Vector3(0.0f, 60f, 0.0f);
+                data.Width = target.m_cellWidth;
+                data.Length = target.m_cellLength;
+                BuildingDecoration.SavePaths(target, (ushort)0, ref data);
+                SaveProps(target, (ushort)0, ref data);
+                //begin mod
+                SaveSubBuildings(target, (ushort)0, ref data);
+                //end mod
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogException(e);
+            }
         }
 
         [RedirectMethod]
@@ -325,6 +332,50 @@ namespace AdvancedBuildingsEditor.Detours
 
         public static void SaveSubBuildings(BuildingInfo info, ushort buildingID, ref Building data)
         {
+            info.m_subBuildings = new BuildingInfo.SubInfo[] { };
+            var fastList = CollectSubInfos(info, data);
+            foreach (var building in fastList)
+            {
+                if (building.m_buildingInfo == null)
+                {
+                    UnityEngine.Debug.LogError("Advanced Buildings Editor: a sub building's info is null! Sub buildings won't be saved");
+                    return;
+                }
+            }
+            if (fastList.m_size < 1)
+            {
+                UnityEngine.Debug.Log("Advanced Buildings Editor: no sub buildings detected");
+                return;
+            }
+            if (NativeSubBuildingsFormat)
+            {
+                info.m_subBuildings = fastList.ToArray();
+            }
+            else
+            {
+                var config = new SubBuildingsDefinition();
+                config.Buildings.Add(new SubBuildingsDefinition.Building()
+                {
+                    Name = info.name
+                });
+                foreach (var building in fastList.ToArray())
+                {
+                    config.Buildings[0].SubBuildings.Add(new SubBuildingsDefinition.SubBuilding()
+                    {
+                        Angle = building.m_angle,
+                        Name = building.m_buildingInfo.name,
+                        FixedHeight = building.m_fixedHeight,
+                        PosX = building.m_position.x,
+                        PosY = building.m_position.y,
+                        PosZ = building.m_position.z,
+                    });
+                }
+                SubBuildingsDefinition.Save(config);
+            }
+        }
+
+        private static FastList<BuildingInfo.SubInfo> CollectSubInfos(BuildingInfo info, Building data)
+        {
             FastList<BuildingInfo.SubInfo> fastList = new FastList<BuildingInfo.SubInfo>();
             Vector3 pos = data.m_position;
             Quaternion q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
@@ -345,32 +396,7 @@ namespace AdvancedBuildingsEditor.Detours
                     fastList.Add(subInfo);
                 }
             }
-            if (NativeSubBuildingsFormat)
-            {
-                info.m_subBuildings = fastList.ToArray();
-            }
-            else
-            {
-                info.m_subBuildings = new BuildingInfo.SubInfo[] { };
-                var config = new SubBuildingsDefinition();
-                config.Buildings.Add(new SubBuildingsDefinition.Building()
-                {
-                    Name = info.name
-                });
-                foreach (var building in fastList.ToArray())
-                {
-                    config.Buildings[0].SubBuildings.Add(new SubBuildingsDefinition.SubBuilding()
-                    {
-                        Angle = building.m_angle,
-                        Name = building.m_buildingInfo.name,
-                        FixedHeight = building.m_fixedHeight,
-                        PosX = building.m_position.x,
-                        PosY = building.m_position.y,
-                        PosZ = building.m_position.z,
-                    });
-                }
-                SubBuildingsDefinition.Save(config);
-            }
+            return fastList;
         }
 
         [RedirectMethod]
