@@ -13,6 +13,8 @@ namespace AdvancedBuildingsEditor.Detours
     [TargetType(typeof(LoadAssetPanel))]
     public class LoadAssetPanelDetour : LoadAssetPanel
     {
+        public static string lastFilePath;
+        public static string lastPackageName;
 
         [RedirectMethod]
         public new void OnLoad()
@@ -95,6 +97,7 @@ namespace AdvancedBuildingsEditor.Detours
             component1.m_editPrefabInfo = component3;
             SaveAssetPanel.lastAssetDescription = this.SafeGetAssetDesc(listingMetaData,
                 listingMetaData.assetRef.package);
+            lastFilePath = Util.GetAssetPath(listingMetaData.assetRef, out lastPackageName);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

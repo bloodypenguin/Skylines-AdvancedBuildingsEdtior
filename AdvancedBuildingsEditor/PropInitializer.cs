@@ -59,26 +59,34 @@ namespace AdvancedBuildingsEditor
             Loading.QueueLoadingAction(() =>
             {
                 InitializeImpl();
-                PrefabCollection<PropInfo>.InitializePrefabs("Sub Buildings Editor", _customPrefabs.Values.ToArray(), null);
+                PrefabCollection<PropInfo>.InitializePrefabs("Advanced Buildings Editor", _customPrefabs.Values.ToArray(), null);
             });
             _isInitialized = true;
         }
 
         private void InitializeImpl()
         {
-            CreatePrefab("Spawn Point Position", "Door Marker", info =>
+            CreatePrefab(SpecialPoints.SpawnPointPosition, "Door Marker", info =>
             {
                 info.m_availableIn = ItemClass.Availability.AssetEditor;
             });
-            CreatePrefab("Spawn Point Target", "Door Marker", info =>
+            CreatePrefab(SpecialPoints.SpawnPointTarget, "Door Marker", info =>
             {
                 info.m_availableIn = ItemClass.Availability.AssetEditor;
             });
-            CreatePrefab("Truck Spawn Point", "Door Marker", info =>
+            CreatePrefab(SpecialPoints.SpawnPoint2Position, "Door Marker", info =>
             {
                 info.m_availableIn = ItemClass.Availability.AssetEditor;
             });
-            CreatePrefab("Truck Despawn Point", "Door Marker", info =>
+            CreatePrefab(SpecialPoints.SpawnPoint2Target, "Door Marker", info =>
+            {
+                info.m_availableIn = ItemClass.Availability.AssetEditor;
+            });
+            CreatePrefab(SpecialPoints.TruckDespawnPosition, "Door Marker", info =>
+            {
+                info.m_availableIn = ItemClass.Availability.AssetEditor;
+            });
+            CreatePrefab(SpecialPoints.TruckSpawnPosition, "Door Marker", info =>
             {
                 info.m_availableIn = ItemClass.Availability.AssetEditor;
             });
@@ -90,7 +98,7 @@ namespace AdvancedBuildingsEditor
 
             if (originalPrefab == null)
             {
-                Debug.LogErrorFormat("AbstractInitializer#CreatePrefab - Prefab '{0}' not found (required for '{1}')", originalPrefabName, newPrefabName);
+                Debug.LogErrorFormat("PropInitializer#CreatePrefab - Prefab '{0}' not found (required for '{1}')", originalPrefabName, newPrefabName);
                 return;
             }
             if (_customPrefabs.ContainsKey(newPrefabName))
@@ -100,7 +108,7 @@ namespace AdvancedBuildingsEditor
             var newPrefab = Util.ClonePrefab(originalPrefab, newPrefabName, transform);
             if (newPrefab == null)
             {
-                Debug.LogErrorFormat("AbstractInitializer#CreatePrefab - Couldn't make prefab '{0}'", newPrefabName);
+                Debug.LogErrorFormat("PropInitializer#CreatePrefab - Couldn't make prefab '{0}'", newPrefabName);
                 return;
             }
             setupAction.Invoke(newPrefab);

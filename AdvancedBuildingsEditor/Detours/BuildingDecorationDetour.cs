@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace AdvancedBuildingsEditor.Detours
 {
-
+    //TODO(earalov): add support for CargoStationAI
     [TargetType(typeof(BuildingDecoration))]
     public class BuildingDecorationDetour
     {
@@ -74,67 +74,65 @@ namespace AdvancedBuildingsEditor.Detours
         public static void LoadSpecialPoints(BuildingInfo info, ushort buildingID, ref Building data)
         {
             Scripts.ClearProps(true);
+            var pos = data.m_position;
+            var q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
+            var matrix4x4 = new Matrix4x4();
+            matrix4x4.SetTRS(pos, q, Vector3.one);
+
             var ai = info.m_buildingAI as DepotAI;
-            if (ai == null)
+            if (ai != null)
+            {
+                var mSpawnPoints = ai.m_spawnPoints;
+                if (mSpawnPoints == null || mSpawnPoints.Length == 0)
+                {
+                    mSpawnPoints = new[]
+                    {
+                        new DepotAI.SpawnPoint
+                        {
+                            m_position = ai.m_spawnPosition,
+                            m_target = ai.m_spawnTarget
+                        }
+                    };
+                }
+                for (var index = 0; index < mSpawnPoints.Length; ++index)
+                {
+                    if (ai.m_canInvertTarget)
+                    {
+                        PlaceSpecialPoint(matrix4x4, mSpawnPoints[index].m_position, AdvancedBuildingsEditor.SpecialPoints.SpawnPointPosition);
+                    }
+                    PlaceSpecialPoint(matrix4x4, mSpawnPoints[index].m_target, AdvancedBuildingsEditor.SpecialPoints.SpawnPointTarget);
+                }
+            }
+            var ai2 = info.m_buildingAI as CargoStationAI;
+            if (ai2 != null)
+            {
+                PlaceSpecialPoint(matrix4x4, ai2.m_spawnPosition, AdvancedBuildingsEditor.SpecialPoints.SpawnPointPosition);
+                PlaceSpecialPoint(matrix4x4, ai2.m_spawnTarget, AdvancedBuildingsEditor.SpecialPoints.SpawnPointTarget);
+                PlaceSpecialPoint(matrix4x4, ai2.m_spawnPosition2, AdvancedBuildingsEditor.SpecialPoints.SpawnPoint2Position);
+                PlaceSpecialPoint(matrix4x4, ai2.m_spawnTarget2, AdvancedBuildingsEditor.SpecialPoints.SpawnPoint2Target);
+                PlaceSpecialPoint(matrix4x4, ai2.m_truckSpawnPosition, AdvancedBuildingsEditor.SpecialPoints.TruckSpawnPosition);
+                PlaceSpecialPoint(matrix4x4, ai2.m_truckUnspawnPosition, AdvancedBuildingsEditor.SpecialPoints.TruckDespawnPosition);
+            }
+            Scripts.RecalculateSpecialPoints();
+        }
+
+        private static void PlaceSpecialPoint(Matrix4x4 matrix4x4, Vector3 pointLocation, string propName)
+        {
+            var info2 = PrefabCollection<PropInfo>.FindLoaded(propName);
+            if (info2 == null || info2.m_prefabDataIndex == -1)
             {
                 return;
             }
-            Vector3 pos = data.m_position;
-            Quaternion q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
-            Matrix4x4 matrix4x4 = new Matrix4x4();
-            matrix4x4.SetTRS(pos, q, Vector3.one);
-            PropManager instance1 = Singleton<PropManager>.instance;
-            var mSpawnPoints = ai.m_spawnPoints;
-            if (mSpawnPoints == null || mSpawnPoints.Length == 0)
+            PropManager instance1 = PropManager.instance;
+            Vector3 vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
+            ushort prop;
+            DisableLimits = true;
+            if (instance1.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info2,
+                vector3, 0, true))
             {
-                mSpawnPoints = new[]
-                {
-                    new DepotAI.SpawnPoint
-                    {
-                        m_position = ai.m_spawnPosition,
-                        m_target = ai.m_spawnTarget
-                    }
-                };
+                instance1.m_props.m_buffer[(int)prop].FixedHeight = true;
             }
-            for (int index = 0; index < mSpawnPoints.Length; ++index)
-            {
-                if (ai.m_canInvertTarget)
-                {
-                    PropInfo info1 = PrefabCollection<PropInfo>.FindLoaded(AdvancedBuildingsEditor.SpecialPoints.SpawnPointPosition);
-                    if (info1 != null)
-                    {
-                        if (info1.m_prefabDataIndex != -1)
-                        {
-                            Vector3 vector3 = matrix4x4.MultiplyPoint(mSpawnPoints[index].m_position).MirrorZ();
-                            ushort prop;
-                            DisableLimits = true;
-                            if (instance1.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info1,
-                                vector3, 0, true))
-                            {
-                                instance1.m_props.m_buffer[(int)prop].FixedHeight = true;
-                            }
-                            DisableLimits = false;
-                        }
-                    }
-                }
-                PropInfo info2 = PrefabCollection<PropInfo>.FindLoaded(AdvancedBuildingsEditor.SpecialPoints.SpawnPointTarget);
-                if (info2 != null)
-                {
-                    if (info2.m_prefabDataIndex != -1)
-                    {
-                        Vector3 vector3 = matrix4x4.MultiplyPoint(mSpawnPoints[index].m_target).MirrorZ();
-                        ushort prop;
-                        DisableLimits = true;
-                        if (instance1.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info2,
-                            vector3, 0, true))
-                        {
-                            instance1.m_props.m_buffer[(int)prop].FixedHeight = true;
-                        }
-                        DisableLimits = false;
-                    }
-                }
-            }
-            Scripts.RecalculateSpecialPoints();
+            DisableLimits = false;
         }
 
 

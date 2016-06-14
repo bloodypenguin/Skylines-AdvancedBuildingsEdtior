@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ColossalFramework;
 using ColossalFramework.Globalization;
+using ColossalFramework.Packaging;
 using ColossalFramework.Plugins;
 using ICities;
 using UnityEngine;
@@ -18,6 +19,17 @@ namespace AdvancedBuildingsEditor
             return new Vector3(vector.x, vector.y, -vector.z);
         }
 
+        public static string GetAssetPath(Package.Asset asset, out string packageName)
+        {
+            packageName = null;
+            if (asset?.package == null)
+            {
+                return null;
+            }
+            packageName = asset.package.packageName;
+            var crpPath = asset.package.packagePath;
+            return crpPath;
+        }
 
         public static IEnumerable<FieldInfo> GetAllFieldsFromType(this Type type)
         {

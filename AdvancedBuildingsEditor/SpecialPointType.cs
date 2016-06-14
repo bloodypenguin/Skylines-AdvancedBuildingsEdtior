@@ -5,6 +5,8 @@
         Unknown,
         SpawnPointTarget,
         SpawnPointPosition,
+        SpawnPoint2Target,
+        SpawnPoint2Position,
         TruckSpawnPosition,
         TruckDespawnPosition
     }

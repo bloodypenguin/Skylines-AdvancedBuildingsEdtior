@@ -175,19 +175,12 @@ namespace AdvancedBuildingsEditor
 
         private static string DefinitionPathForAssetPackage(Package.Asset asset, out string packageName)
         {
-            packageName = null;
-            string subBuildingsDefPath = null;
-            if (asset == null || asset.package == null)
+            var assetPath = Util.GetAssetPath(asset, out packageName);
+            if (assetPath == null)
             {
-                return subBuildingsDefPath;
+                return null;
             }
-            packageName = asset.package.packageName;
-            var crpPath = asset.package.packagePath;
-            if (crpPath == null)
-            {
-                return subBuildingsDefPath;
-            }
-            subBuildingsDefPath = Path.Combine(Path.GetDirectoryName(crpPath), "SubBuildingsDefinition.xml");
+            var subBuildingsDefPath = Path.Combine(Path.GetDirectoryName(assetPath), "SubBuildingsDefinition.xml");
             return subBuildingsDefPath;
         }
 

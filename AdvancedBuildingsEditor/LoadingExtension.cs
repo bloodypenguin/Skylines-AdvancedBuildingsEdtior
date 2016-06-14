@@ -30,6 +30,7 @@ namespace AdvancedBuildingsEditor
             }
             Redirector<BuildingDecorationDetour>.Revert();
             Redirector<LoadAssetPanelDetour>.Revert();
+            Redirector<SaveAssetPanelDetour>.Revert();
             initialized = false;
         }
 
@@ -50,6 +51,7 @@ namespace AdvancedBuildingsEditor
             {
                 Redirector<BuildingDecorationDetour>.Revert();
                 Redirector<LoadAssetPanelDetour>.Revert();
+                Redirector<SaveAssetPanelDetour>.Revert();
                 Redirector<PropManagerDetour>.Revert();
                 DestroyContainer();
                 return;
@@ -66,6 +68,16 @@ namespace AdvancedBuildingsEditor
             Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color1 = Color.cyan;
             Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color2 = Color.cyan;
             Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color3 = Color.cyan;
+
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color0 = Color.magenta;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color1 = Color.magenta;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color2 = Color.magenta;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color3 = Color.magenta;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color0 = Color.yellow;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color1 = Color.yellow;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color2 = Color.yellow;
+            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color3 = Color.yellow;
+
             Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color0 = Color.green;
             Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color1 = Color.green;
             Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color2 = Color.green;
@@ -77,6 +89,7 @@ namespace AdvancedBuildingsEditor
 
             Redirector<BuildingDecorationDetour>.Deploy();
             Redirector<LoadAssetPanelDetour>.Deploy();
+            Redirector<SaveAssetPanelDetour>.Deploy();
             Redirector<PropManagerDetour>.Deploy();
             SubBuildingsEnablerFormat.InitializeBuildingsWithSubBuildings();
 
