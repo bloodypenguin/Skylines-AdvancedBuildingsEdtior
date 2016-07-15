@@ -35,6 +35,16 @@
     <Compile Include="Detours\PropManagerDetour.cs" />
     <Compile Include="Detours\SaveAssetPanelDetour.cs" />
     <Compile Include="Loading.cs" />
+    <Compile Include="ModOptions.cs" />
+    <Compile Include="Options\AbstractOptionsAttribute.cs" />
+    <Compile Include="Options\CheckboxAttribute.cs" />
+    <Compile Include="Options\DropDownAttribute.cs" />
+    <Compile Include="Options\IModOptions.cs" />
+    <Compile Include="Options\IModOptionsExtension.cs" />
+    <Compile Include="Options\OptionsWrapper.cs" />
+    <Compile Include="Options\TextFieldAttribute.cs" />
+    <Compile Include="Options\UIHelperBaseExtension.cs" />
+    <Compile Include="Options\Util.cs" />
     <Compile Include="Panel.cs" />
     <Compile Include="PropInitializer.cs" />
     <Compile Include="Detours\BuildingDecorationDetour.cs" />
@@ -49,6 +59,7 @@
     <Compile Include="Redirection\RedirectReverseAttribute.cs" />
     <Compile Include="Redirection\TargetTypeAttribute.cs" />
     <Compile Include="Redirection\Tuple.cs" />
+    <Compile Include="SubBuildingsFormats.cs" />
     <Compile Include="Scripts.cs" />
     <Compile Include="SpecialPoints.cs" />
     <Compile Include="SpecialPointType.cs" />

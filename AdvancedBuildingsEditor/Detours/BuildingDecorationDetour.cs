@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AdvancedBuildingsEditor.Options;
 using AdvancedBuildingsEditor.Redirection;
 using ColossalFramework;
 using UnityEngine;
@@ -15,8 +16,6 @@ namespace AdvancedBuildingsEditor.Detours
         public static bool DisableLimits = false;
 
         public static Dictionary<ushort, SpecialPointType> SpecialPoints = new Dictionary<ushort, SpecialPointType>();
-
-        private static bool NativeSubBuildingsFormat = false; //TODO(earalov): set in options
 
         [RedirectMethod]
         public static void LoadDecorations(BuildingInfo source)
@@ -344,7 +343,7 @@ namespace AdvancedBuildingsEditor.Detours
                 UnityEngine.Debug.Log("Advanced Buildings Editor: no sub buildings detected");
                 return;
             }
-            if (NativeSubBuildingsFormat)
+            if (OptionsWrapper<ModOptions>.Options.SubBuildingsFormat == (int)SubBuildingsFormats.Native)
             {
                 info.m_subBuildings = fastList.ToArray();
             }

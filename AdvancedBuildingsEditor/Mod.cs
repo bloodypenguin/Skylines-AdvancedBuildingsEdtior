@@ -1,4 +1,5 @@
-﻿using ICities;
+﻿using AdvancedBuildingsEditor.Options;
+using ICities;
 
 namespace AdvancedBuildingsEditor
 {
@@ -6,5 +7,10 @@ namespace AdvancedBuildingsEditor
     {
         public string Name => "Advanced Buildings Editor";
         public string Description => "Advanced Buildings Editor";
+
+        public void OnSettingsUI(UIHelperBase helper)
+        {
+            helper.AddOptionsGroup<ModOptions>();
+        }
     }
 }
