@@ -72,6 +72,14 @@ namespace AdvancedBuildingsEditor
             {
                 Scripts.ClearProps();
             };
+
+            var reloadDecorationsButton = UIUtil.CreateButton(this, "Reload Decorations");
+            reloadDecorationsButton.relativePosition = new Vector3(5, 144);
+            reloadDecorationsButton.eventClicked += (component, param) =>
+            {
+                BuildingDecoration.ClearDecorations();
+                BuildingDecoration.LoadDecorations((BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo);
+            };
         }
     }
 }

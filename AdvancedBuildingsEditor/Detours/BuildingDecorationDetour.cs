@@ -231,10 +231,8 @@ namespace AdvancedBuildingsEditor.Detours
                                 case SpecialPointType.SpawnPointPosition:
                                     break;
                                 default:
-                                    throw new ArgumentOutOfRangeException();
+                                    continue; //ignored
                             }
-
-
                             continue;
                         }
                     }
@@ -270,28 +268,38 @@ namespace AdvancedBuildingsEditor.Detours
             //begin mod
             if (depotAI != null)
             {
-                if (spawnPoints.m_size == 1)
+                if (OptionsWrapper<ModOptions>.Options.PreciseSpecialPointsPostions)
                 {
-                    depotAI.m_spawnPosition = spawnPoints[0].m_position;
-                    depotAI.m_spawnTarget = spawnPoints[0].m_target;
-                    depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
-                }
-                else if (spawnPoints.m_size > 1)
-                {
-                    depotAI.m_spawnPosition = Vector3.zero;
-                    depotAI.m_spawnTarget = Vector3.zero;
-                    depotAI.m_spawnPoints = spawnPoints.ToArray();
+                    var ai = ((DepotAI) ((BuildingInfo) ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI);
+                    depotAI.m_spawnPoints = ai.m_spawnPoints;
+                    depotAI.m_spawnPosition = ai.m_spawnPosition;
+                    depotAI.m_spawnTarget = ai.m_spawnTarget;
                 }
                 else
                 {
-                    depotAI.m_spawnPosition = Vector3.zero;
-                    depotAI.m_spawnTarget = Vector3.zero;
-                    depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
+                    if (spawnPoints.m_size == 1)
+                    {
+                        depotAI.m_spawnPosition = spawnPoints[0].m_position;
+                        depotAI.m_spawnTarget = spawnPoints[0].m_target;
+                        depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
+                    }
+                    else if (spawnPoints.m_size > 1)
+                    {
+                        depotAI.m_spawnPosition = Vector3.zero;
+                        depotAI.m_spawnTarget = Vector3.zero;
+                        depotAI.m_spawnPoints = spawnPoints.ToArray();
+                    }
+                    else
+                    {
+                        depotAI.m_spawnPosition = Vector3.zero;
+                        depotAI.m_spawnTarget = Vector3.zero;
+                        depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
+                    }
                 }
             }
             //end mod
             TreeManager instance2 = Singleton<TreeManager>.instance;
-            for (int index = 0; index < 262144; ++index)
+            for (int index = 0; index < instance2.m_trees.m_buffer.Length; ++index)
             {
                 if (((int)instance2.m_trees.m_buffer[index].m_flags & 3) == 1 && instance2.m_trees.m_buffer[index].GrowState != 0)
                 {
@@ -379,7 +387,7 @@ namespace AdvancedBuildingsEditor.Detours
             matrix4x4.SetTRS(pos, q, Vector3.one);
             matrix4x4 = matrix4x4.inverse;
             BuildingManager instance1 = Singleton<BuildingManager>.instance;
-            for (int index = 0; index < 49152; ++index)
+            for (int index = 0; index < instance1.m_buildings.m_buffer.Length; ++index)
             {
                 var building = instance1.m_buildings.m_buffer[index];
                 if (((int)building.m_flags & 67) == 1)
@@ -399,31 +407,31 @@ namespace AdvancedBuildingsEditor.Detours
         public static void ClearDecorations()
         {
             NetManager instance1 = Singleton<NetManager>.instance;
-            for (int index = 1; index < 36864; ++index)
+            for (int index = 1; index < instance1.m_segments.m_buffer.Length; ++index)
             {
                 if (instance1.m_segments.m_buffer[index].m_flags != NetSegment.Flags.None)
                     instance1.ReleaseSegment((ushort)index, true);
             }
-            for (int index = 1; index < 32768; ++index)
+            for (int index = 1; index < instance1.m_nodes.m_buffer.Length; ++index)
             {
                 if (instance1.m_nodes.m_buffer[index].m_flags != NetNode.Flags.None)
                     instance1.ReleaseNode((ushort)index);
             }
             PropManager instance2 = Singleton<PropManager>.instance;
-            for (int index = 1; index < 65536; ++index)
+            for (int index = 1; index < instance2.m_props.m_buffer.Length; ++index)
             {
                 if ((int)instance2.m_props.m_buffer[index].m_flags != 0)
                     instance2.ReleaseProp((ushort)index);
             }
             TreeManager instance3 = Singleton<TreeManager>.instance;
-            for (int index = 1; index < 262144; ++index)
+            for (int index = 1; index < instance3.m_trees.m_buffer.Length; ++index)
             {
                 if ((int)instance3.m_trees.m_buffer[index].m_flags != 0)
                     instance3.ReleaseTree((uint)index);
             }
             //begin mod
             BuildingManager instance4 = Singleton<BuildingManager>.instance;
-            for (int index = 1; index < 49152; ++index)
+            for (int index = 1; index < instance4.m_buildings.m_buffer.Length; ++index)
             {
                 if ((int)instance4.m_buildings.m_buffer[index].m_flags != 0)
                     instance4.ReleaseBuilding((ushort)index);
