@@ -23,25 +23,8 @@ namespace AdvancedBuildingsEditor
         public override void OnReleased()
         {
             base.OnReleased();
-            DestroyContainer();
-            if (!initialized)
-            {
-                return;
-            }
-            Redirector<BuildingDecorationDetour>.Revert();
-            Redirector<LoadAssetPanelDetour>.Revert();
-            Redirector<SaveAssetPanelDetour>.Revert();
+            Reset();
             initialized = false;
-        }
-
-        private static void DestroyContainer()
-        {
-            if (Container == null)
-            {
-                return;
-            }
-            Object.Destroy(Container.gameObject);
-            Container = null;
         }
 
         public override void OnLevelLoaded(LoadMode mode)
@@ -49,43 +32,15 @@ namespace AdvancedBuildingsEditor
             base.OnLevelLoaded(mode);
             if (mode != LoadMode.LoadAsset && mode != LoadMode.NewAsset)
             {
-                Redirector<BuildingDecorationDetour>.Revert();
-                Redirector<LoadAssetPanelDetour>.Revert();
-                Redirector<SaveAssetPanelDetour>.Revert();
-                Redirector<PropManagerDetour>.Revert();
-                DestroyContainer();
+                Reset();
+                Redirector<PropManagerDetour>.Revert(); //TODO(earalov): remember why moved it out of Reset()
                 return;
             }
             if (initialized)
             {
                 return;
             }
-            Container._customPrefabs[SpecialPoints.SpawnPointPosition].m_color0 = Color.blue;
-            Container._customPrefabs[SpecialPoints.SpawnPointPosition].m_color1 = Color.blue;
-            Container._customPrefabs[SpecialPoints.SpawnPointPosition].m_color2 = Color.blue;
-            Container._customPrefabs[SpecialPoints.SpawnPointPosition].m_color3 = Color.blue;
-            Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color0 = Color.cyan;
-            Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color1 = Color.cyan;
-            Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color2 = Color.cyan;
-            Container._customPrefabs[SpecialPoints.SpawnPointTarget].m_color3 = Color.cyan;
-
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color0 = Color.magenta;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color1 = Color.magenta;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color2 = Color.magenta;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Position].m_color3 = Color.magenta;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color0 = Color.yellow;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color1 = Color.yellow;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color2 = Color.yellow;
-            Container._customPrefabs[SpecialPoints.SpawnPoint2Target].m_color3 = Color.yellow;
-
-            Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color0 = Color.green;
-            Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color1 = Color.green;
-            Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color2 = Color.green;
-            Container._customPrefabs[SpecialPoints.TruckSpawnPosition].m_color3 = Color.green;
-            Container._customPrefabs[SpecialPoints.TruckDespawnPosition].m_color0 = Color.red;
-            Container._customPrefabs[SpecialPoints.TruckDespawnPosition].m_color1 = Color.red;
-            Container._customPrefabs[SpecialPoints.TruckDespawnPosition].m_color2 = Color.red;
-            Container._customPrefabs[SpecialPoints.TruckDespawnPosition].m_color3 = Color.red;
+            Container.SetupPropColors();
 
             Redirector<BuildingDecorationDetour>.Deploy();
             Redirector<LoadAssetPanelDetour>.Deploy();
@@ -97,11 +52,28 @@ namespace AdvancedBuildingsEditor
             initialized = true;
         }
 
-
         public override void OnLevelUnloading()
         {
             base.OnLevelUnloading();
-            Redirector<PropManagerDetour>.Revert();
+            Redirector<PropManagerDetour>.Revert(); //TODO(earalov): remember why that must be done on unloading
+        }
+
+        private static void Reset()
+        {
+            DestroyContainer();
+            Redirector<BuildingDecorationDetour>.Revert();
+            Redirector<LoadAssetPanelDetour>.Revert();
+            Redirector<SaveAssetPanelDetour>.Revert();
+        }
+
+        private static void DestroyContainer()
+        {
+            if (Container == null)
+            {
+                return;
+            }
+            Object.Destroy(Container.gameObject);
+            Container = null;
         }
     }
 }

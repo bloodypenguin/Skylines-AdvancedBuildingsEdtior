@@ -18,6 +18,37 @@ namespace AdvancedBuildingsEditor
             OriginalPrefabs.Clear();
         }
 
+
+        public void SetupPropColors()
+        {
+            _customPrefabs[SpecialPoints.SpawnPointPosition].m_color0 = Color.blue;
+            _customPrefabs[SpecialPoints.SpawnPointPosition].m_color1 = Color.blue;
+            _customPrefabs[SpecialPoints.SpawnPointPosition].m_color2 = Color.blue;
+            _customPrefabs[SpecialPoints.SpawnPointPosition].m_color3 = Color.blue;
+            _customPrefabs[SpecialPoints.SpawnPointTarget].m_color0 = Color.cyan;
+            _customPrefabs[SpecialPoints.SpawnPointTarget].m_color1 = Color.cyan;
+            _customPrefabs[SpecialPoints.SpawnPointTarget].m_color2 = Color.cyan;
+            _customPrefabs[SpecialPoints.SpawnPointTarget].m_color3 = Color.cyan;
+
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color0 = Color.magenta;
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color1 = Color.magenta;
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color2 = Color.magenta;
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color3 = Color.magenta;
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color0 = Color.yellow;
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color1 = Color.yellow;
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color2 = Color.yellow;
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color3 = Color.yellow;
+
+            _customPrefabs[SpecialPoints.TruckSpawnPosition].m_color0 = Color.green;
+            _customPrefabs[SpecialPoints.TruckSpawnPosition].m_color1 = Color.green;
+            _customPrefabs[SpecialPoints.TruckSpawnPosition].m_color2 = Color.green;
+            _customPrefabs[SpecialPoints.TruckSpawnPosition].m_color3 = Color.green;
+            _customPrefabs[SpecialPoints.TruckDespawnPosition].m_color0 = Color.red;
+            _customPrefabs[SpecialPoints.TruckDespawnPosition].m_color1 = Color.red;
+            _customPrefabs[SpecialPoints.TruckDespawnPosition].m_color2 = Color.red;
+            _customPrefabs[SpecialPoints.TruckDespawnPosition].m_color3 = Color.red;
+        }
+
         public void OnLevelWasLoaded(int level)
         {
             if (level == 6)
@@ -128,6 +159,5 @@ namespace AdvancedBuildingsEditor
             OriginalPrefabs.Add(originalPrefabName, foundPrefab);
             return foundPrefab;
         }
-
     }
 }
