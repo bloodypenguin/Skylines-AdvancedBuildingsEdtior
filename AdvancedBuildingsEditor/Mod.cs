@@ -11,6 +11,8 @@ namespace AdvancedBuildingsEditor
         public void OnSettingsUI(UIHelperBase helper)
         {
             helper.AddOptionsGroup<ModOptions>();
+            helper.AddButton("Refresh Sub-Buildings Editor Definitions",
+                SubBuildingsEnablerFormat.InitializeBuildingsWithSubBuildings);
         }
     }
 }

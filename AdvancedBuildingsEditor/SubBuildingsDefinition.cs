@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using ColossalFramework.IO;
 using UnityEngine;
 
 namespace AdvancedBuildingsEditor
@@ -58,7 +59,7 @@ namespace AdvancedBuildingsEditor
         {
             if (instance != null)
             {
-                var configPath = "SubBuildingsDefinition.xml";
+                var configPath = Path.Combine(DataLocation.assetsPath, "SubBuildingsDefinition.xml");
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(SubBuildingsDefinition));
                 XmlSerializerNamespaces noNamespaces = new XmlSerializerNamespaces();
                 noNamespaces.Add("", "");

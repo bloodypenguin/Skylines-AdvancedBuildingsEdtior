@@ -140,7 +140,7 @@ namespace AdvancedBuildingsEditor.Detours
                 BuildingDecoration.SavePaths(target, (ushort)0, ref data);
                 SaveProps(target, (ushort)0, ref data);
                 //begin mod
-                SaveSubBuildings(target, (ushort)0, ref data);
+                SaveSubBuildings(target, ref data);
                 //end mod
             }
             catch (Exception e)
@@ -327,7 +327,7 @@ namespace AdvancedBuildingsEditor.Detours
 
 
 
-        public static void SaveSubBuildings(BuildingInfo info, ushort buildingID, ref Building data)
+        public static void SaveSubBuildings(BuildingInfo info, ref Building data)
         {
             info.m_subBuildings = new BuildingInfo.SubInfo[] { };
             var fastList = CollectSubInfos(info, data);
