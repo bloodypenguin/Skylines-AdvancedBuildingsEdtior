@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using AdvancedBuildingsEditor.Detours;
+using ColossalFramework;
+using ColossalFramework.Math;
 using UnityEngine;
 
 namespace AdvancedBuildingsEditor
@@ -77,6 +79,49 @@ namespace AdvancedBuildingsEditor
                 {
                     BuildingDecorationDetour.SpecialPoints.Add(index1, SpecialPoints.GetSpecialPointType(propInfo));
                 }
+            }
+        }
+
+        public static void AutoPlaceSpecialPoints()
+        {
+            ClearProps(true);
+            var instance = NetManager.instance;
+            int counter = 0;
+            foreach (var netSegment in instance.m_segments.m_buffer)
+            {
+                if (netSegment.m_flags == NetSegment.Flags.None || netSegment.Info == null)
+                {
+                    continue;
+                }
+                var startNode = instance.m_nodes.m_buffer[netSegment.m_startNode].m_position;
+                var endNode = instance.m_nodes.m_buffer[netSegment.m_endNode].m_position;
+                var middle = new Vector3((startNode.x + endNode.x)/2, (startNode.y + endNode.y) / 2, (startNode.z + endNode.z) / 2);
+                var name = netSegment.Info.name;
+                if ((name == "Bus Station Stop" && name!= "Bus Station Way") || name.Contains("Station") || name == "Airplane Stop" || name.Contains("Train Cargo Track"))
+                {
+                    if (counter == 0 || !name.Contains("Train Cargo Track"))
+                    {
+                        CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointPosition), middle);
+                        CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointTarget), middle);
+                    }
+                    else if(counter == 1)
+                    {
+                        CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Position), middle);
+                        CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Target), middle);
+                    }
+                    counter++;
+                }
+            }
+        }
+
+
+        public static void CreateSpecialPoint(PropInfo info, Vector3 position)
+        {
+            ushort prop;
+            if (PropManager.instance.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info,
+                position, 0, true))
+            {
+                PropManager.instance.m_props.m_buffer[(int)prop].FixedHeight = true;
             }
         }
     }

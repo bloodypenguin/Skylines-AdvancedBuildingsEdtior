@@ -122,18 +122,11 @@ namespace AdvancedBuildingsEditor.Detours
             {
                 return;
             }
-            PropManager instance1 = PropManager.instance;
             Vector3 vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
-            ushort prop;
             DisableLimits = true;
-            if (instance1.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info2,
-                vector3, 0, true))
-            {
-                instance1.m_props.m_buffer[(int)prop].FixedHeight = true;
-            }
+            Scripts.CreateSpecialPoint(info2, vector3);
             DisableLimits = false;
         }
-
 
         [RedirectMethod]
         public static void SaveDecorations(BuildingInfo target)

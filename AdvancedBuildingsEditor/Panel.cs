@@ -80,6 +80,13 @@ namespace AdvancedBuildingsEditor
                 BuildingDecoration.ClearDecorations();
                 BuildingDecoration.LoadDecorations((BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo);
             };
+
+            var autoPlaceSpecialPointsButton = UIUtil.CreateButton(this, "Auto-place spawn points");
+            autoPlaceSpecialPointsButton.relativePosition = new Vector3(5, 170);
+            autoPlaceSpecialPointsButton.eventClicked += (component, param) =>
+            {
+                Scripts.AutoPlaceSpecialPoints();
+            };
         }
     }
 }
