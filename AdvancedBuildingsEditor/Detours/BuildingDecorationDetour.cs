@@ -159,22 +159,20 @@ namespace AdvancedBuildingsEditor.Detours
             matrix4x4.SetTRS(pos, q, Vector3.one);
             matrix4x4 = matrix4x4.inverse;
             //begin mod
-            FastList<DepotAI.SpawnPoint> spawnPoints = new FastList<DepotAI.SpawnPoint>();
             Quaternion q_1 = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
             Matrix4x4 matrix4x4_1 = new Matrix4x4();
             matrix4x4_1.SetTRS(pos, q_1, Vector3.one);
             matrix4x4_1 = matrix4x4_1.inverse;
-            var depotAI = info.m_buildingAI as DepotAI;
-            //end mod
             PropManager instance1 = Singleton<PropManager>.instance;
             Scripts.RecalculateSpecialPoints();
-
+            var depotAI = info.m_buildingAI as DepotAI;
+            var cargoStationAI = info.m_buildingAI as CargoStationAI; //TODO(earalov): save cargo station's special points
+            FastList<DepotAI.SpawnPoint> depotSpawnPoints = new FastList<DepotAI.SpawnPoint>();
 
             for (ushort index = 0; index < ushort.MaxValue; ++index)
             {
                 if (((int)instance1.m_props.m_buffer[index].m_flags & 67) == 1)
                 {
-                    //begin mod
                     if (depotAI != null)
                     {
                         if (SpecialPoints.ContainsKey(index))
@@ -215,7 +213,7 @@ namespace AdvancedBuildingsEditor.Detours
                                     {
                                         calculatedPositionGlobalPosition = targetGlobalPosition;
                                     }
-                                    spawnPoints.Add(new DepotAI.SpawnPoint()
+                                    depotSpawnPoints.Add(new DepotAI.SpawnPoint()
                                     {
                                         m_position = calculatedPositionGlobalPosition.MirrorZ(),
                                         m_target = targetGlobalPosition.MirrorZ(),
@@ -270,17 +268,17 @@ namespace AdvancedBuildingsEditor.Detours
                 }
                 else
                 {
-                    if (spawnPoints.m_size == 1)
+                    if (depotSpawnPoints.m_size == 1)
                     {
-                        depotAI.m_spawnPosition = spawnPoints[0].m_position;
-                        depotAI.m_spawnTarget = spawnPoints[0].m_target;
+                        depotAI.m_spawnPosition = depotSpawnPoints[0].m_position;
+                        depotAI.m_spawnTarget = depotSpawnPoints[0].m_target;
                         depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
                     }
-                    else if (spawnPoints.m_size > 1)
+                    else if (depotSpawnPoints.m_size > 1)
                     {
                         depotAI.m_spawnPosition = Vector3.zero;
                         depotAI.m_spawnTarget = Vector3.zero;
-                        depotAI.m_spawnPoints = spawnPoints.ToArray();
+                        depotAI.m_spawnPoints = depotSpawnPoints.ToArray();
                     }
                     else
                     {
