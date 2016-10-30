@@ -1,4 +1,6 @@
-﻿namespace AdvancedBuildingsEditor
+﻿using ColossalFramework.Steamworks;
+
+namespace AdvancedBuildingsEditor
 {
     public static class SpecialPoints
     {
@@ -9,6 +11,24 @@
         public const string SpawnPoint2Position = "Spawn Point 2 Position";
         public const string TruckSpawnPosition = "Truck Spawn Point";
         public const string TruckDespawnPosition = "Truck Despawn Point";
+
+        public static int CountSpecialPoints()
+        {
+            var result = 0;
+            foreach (var propInstance in PropManager.instance.m_props.m_buffer)
+            {
+                if (propInstance.m_flags == 0)
+                {
+                    continue;
+                }
+                if (IsSpecialPoint(propInstance.Info))
+                {
+                    result++;
+                }
+            }
+            return result;
+        }
+
 
         public static bool IsSpecialPoint(PropInfo info)
         {

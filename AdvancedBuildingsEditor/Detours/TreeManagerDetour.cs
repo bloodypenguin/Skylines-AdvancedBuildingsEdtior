@@ -3,41 +3,32 @@ using ColossalFramework;
 
 namespace AdvancedBuildingsEditor.Detours
 {
-    [TargetType(typeof(PropManager))]
-    public class PropManagerDetour : PropManager
+    [TargetType(typeof(TreeManager))]
+    public class TreeManagerDetour : TreeManager
     {
-        //TODO(earalov): add similar detour for tree manager
         [RedirectMethod]
-        public new bool CheckLimits()
+        public bool CheckLimits()
         {
             //begin mod
             if (BuildingDecorationDetour.DisableLimits)
             {
                 return true;
             }
-            var propTool = ToolsModifierControl.GetCurrentTool<PropTool>();
-            if (propTool != null)
-            {
-                if (SpecialPoints.IsSpecialPoint(propTool.m_prefab))
-                {
-                    return true;
-                }
-            }
             //end mod
             ItemClass.Availability availability = Singleton<ToolManager>.instance.m_properties.m_mode;
             if ((availability & ItemClass.Availability.MapEditor) != ItemClass.Availability.None)
             {
-                if (this.m_propCount >= 50000)
+                if (this.m_treeCount >= 250000)
                     return false;
             }
             else if ((availability & ItemClass.Availability.AssetEditor) != ItemClass.Availability.None)
             {
                 //begin mod
-                if (this.m_propCount + Singleton<TreeManager>.instance.m_treeCount >= 64 + SpecialPoints.CountSpecialPoints())
+                if (this.m_treeCount + Singleton<PropManager>.instance.m_propCount >= 64 + SpecialPoints.CountSpecialPoints())
                     return false;
                 //end mod
             }
-            else if (this.m_propCount >= 65531)
+            else if (this.m_treeCount >= 262139)
                 return false;
             return true;
         }

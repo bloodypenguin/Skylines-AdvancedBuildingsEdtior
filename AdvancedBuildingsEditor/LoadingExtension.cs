@@ -33,7 +33,8 @@ namespace AdvancedBuildingsEditor
             if (mode != LoadMode.LoadAsset && mode != LoadMode.NewAsset)
             {
                 Reset();
-                Redirector<PropManagerDetour>.Revert(); //TODO(earalov): remember why moved it out of Reset()
+                Redirector<PropManagerDetour>.Revert();
+                Redirector<TreeManagerDetour>.Revert();
                 return;
             }
             if (initialized)
@@ -46,6 +47,8 @@ namespace AdvancedBuildingsEditor
             Redirector<LoadAssetPanelDetour>.Deploy();
             Redirector<SaveAssetPanelDetour>.Deploy();
             Redirector<PropManagerDetour>.Deploy();
+            Redirector<TreeManagerDetour>.Deploy();
+            Redirector<AssetEditorChirpPanelDetour>.Deploy();
             SubBuildingsEnablerFormat.InitializeBuildingsWithSubBuildings();
 
             UIView.GetAView().AddUIComponent(typeof(Panel));
@@ -55,7 +58,8 @@ namespace AdvancedBuildingsEditor
         public override void OnLevelUnloading()
         {
             base.OnLevelUnloading();
-            Redirector<PropManagerDetour>.Revert(); //TODO(earalov): remember why that must be done on unloading
+            Redirector<PropManagerDetour>.Revert();
+            Redirector<TreeManagerDetour>.Revert();
         }
 
         private static void Reset()
@@ -64,6 +68,7 @@ namespace AdvancedBuildingsEditor
             Redirector<BuildingDecorationDetour>.Revert();
             Redirector<LoadAssetPanelDetour>.Revert();
             Redirector<SaveAssetPanelDetour>.Revert();
+            Redirector<AssetEditorChirpPanelDetour>.Revert();
         }
 
         private static void DestroyContainer()

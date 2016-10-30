@@ -31,9 +31,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Detours\AssetEditorChirpPanelDetour.cs" />
     <Compile Include="Detours\AssetImporterAssetImportDetour.cs" />
     <Compile Include="Detours\PropManagerDetour.cs" />
     <Compile Include="Detours\SaveAssetPanelDetour.cs" />
+    <Compile Include="Detours\TreeManagerDetour.cs" />
     <Compile Include="Loading.cs" />
     <Compile Include="ModOptions.cs" />
     <Compile Include="Options\AbstractOptionsAttribute.cs" />
