@@ -144,6 +144,7 @@ namespace AdvancedBuildingsEditor
             }
             setupAction.Invoke(newPrefab);
             _customPrefabs.Add(newPrefabName, newPrefab);
+            Util.AddLocale("PROPS", newPrefabName, newPrefabName, newPrefabName);
 
         }
 
