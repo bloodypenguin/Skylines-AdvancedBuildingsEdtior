@@ -5,12 +5,14 @@ namespace AdvancedBuildingsEditor
 {
     public class Panel : UIPanel
     {
+        private UIPanel m_SelectRef;
+
         public override void Start()
         {
             base.Start();
             this.name = "AdvancedBuildingsEditor";
             this.width = 230f;
-            this.height = 450f;
+            this.height = 222f;
             this.backgroundSprite = "MenuPanel2";
             this.canFocus = true;
             this.isInteractive = true;
@@ -87,6 +89,56 @@ namespace AdvancedBuildingsEditor
             {
                 Scripts.AutoPlaceSpecialPoints();
             };
+
+            var addSubBuildingButton = UIUtil.CreateButton(this, "Add sub-building");
+            addSubBuildingButton.relativePosition = new Vector3(5, 196);
+            addSubBuildingButton.eventClicked += (component, param) =>
+            {
+                if (ToolsModifierControl.GetCurrentTool<DefaultTool>() == null)
+                {
+                    return;
+                }
+                if (m_SelectRef.isVisible)
+                    return;
+                var buildingInfo = ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo;
+                if (buildingInfo == null)
+                    return;
+                var component1 = m_SelectRef.GetComponent<AssetImporterAssetTemplate>();
+                var callbackDelegate = new AssetImporterAssetTemplate.ReferenceCallbackDelegate(
+                    info =>
+                    {
+                        ToolsModifierControl.SetTool<BuildingTool>();
+                        ToolsModifierControl.GetTool<BuildingTool>().m_prefab = (BuildingInfo)info;
+                        m_SelectRef.isVisible = false;
+                    });
+                component1.ReferenceCallback = callbackDelegate;
+                component1.Reset();
+                component1.RefreshWithFilter(AssetImporterAssetTemplate.Filter.Buildings);
+                m_SelectRef.isVisible = true;
+            };
+            this.m_SelectRef = GameObject.Find("SelectReference").GetComponent<UIPanel>();
+            this.m_SelectRef.isVisible = false;
+        }
+
+        public void Update()
+        {
+            isVisible = ToolsModifierControl.toolController.m_editPrefabInfo is BuildingInfo;
+            if (!isVisible)
+            {
+                this.m_SelectRef.isVisible = false;
+            }
+            if (isVisible)
+            {
+                if (Input.GetKey(KeyCode.Escape))
+                {
+                    if (ToolsModifierControl.GetCurrentTool<BuildingTool>() == null)
+                    {
+                        return;
+                    }
+                    ToolsModifierControl.SetTool<DefaultTool>();
+                    ToolsModifierControl.GetTool<BuildingTool>().m_prefab = null;
+                }
+            }
         }
     }
 }
