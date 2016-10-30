@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     public class Util
     {

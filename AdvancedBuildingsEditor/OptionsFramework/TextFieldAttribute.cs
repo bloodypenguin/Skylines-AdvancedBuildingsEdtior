@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Reflection;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class CheckboxAttribute : AbstractOptionsAttribute
+    public class TextFieldAttribute : AbstractOptionsAttribute
     {
-
-        public CheckboxAttribute(string description, string actionClass, string actionMethod, string group = null) : base(description, group)
+        public TextFieldAttribute(string description, string actionClass, string actionMethod, string group = null) : base(description, group)
         {
             ActionClass = actionClass;
             ActionMethod = actionMethod;
         }
 
-        public CheckboxAttribute(string description, string group = null) : base(description, group)
+        public TextFieldAttribute(string description, string group = null) : base(description, group)
         {
             ActionClass = null;
             ActionMethod = null;
         }
 
-        public Action<bool> Action
+        public Action<string> Action
         {
             get
             {
@@ -32,9 +31,9 @@ namespace AdvancedBuildingsEditor.Options
                 {
                     return null;
                 }
-                return b =>
+                return s =>
                 {
-                    method.Invoke(null, new object[] { b });
+                    method.Invoke(null, new object[] {s});
                 };
             }
         }

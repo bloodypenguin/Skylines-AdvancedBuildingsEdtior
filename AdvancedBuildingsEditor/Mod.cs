@@ -1,4 +1,4 @@
-﻿using AdvancedBuildingsEditor.Options;
+﻿using AdvancedBuildingsEditor.OptionsFramework;
 using ICities;
 
 namespace AdvancedBuildingsEditor
@@ -10,7 +10,7 @@ namespace AdvancedBuildingsEditor
 
         public void OnSettingsUI(UIHelperBase helper)
         {
-            helper.AddOptionsGroup<ModOptions>();
+            helper.AddOptionsGroup<Options>();
             helper.AddButton("Refresh Sub-Buildings Editor Definitions",
                 SubBuildingsEnablerFormat.InitializeBuildingsWithSubBuildings);
         }

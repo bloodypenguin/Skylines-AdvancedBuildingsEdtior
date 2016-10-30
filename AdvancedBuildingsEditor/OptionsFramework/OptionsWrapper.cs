@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     public class OptionsWrapper<T> where T : IModOptions
     {

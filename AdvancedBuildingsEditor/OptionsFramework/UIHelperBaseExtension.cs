@@ -5,7 +5,7 @@ using ColossalFramework.Steamworks;
 using ColossalFramework.UI;
 using ICities;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     public static class UIHelperBaseExtension
     {

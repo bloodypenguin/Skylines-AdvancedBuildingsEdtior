@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     public abstract class AbstractOptionsAttribute : Attribute 
     {

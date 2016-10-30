@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class DropDownAttribute : AbstractOptionsAttribute

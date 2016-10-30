@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AdvancedBuildingsEditor.Options;
+using AdvancedBuildingsEditor.OptionsFramework;
 using AdvancedBuildingsEditor.Redirection;
 using ColossalFramework;
 using UnityEngine;
@@ -261,7 +261,7 @@ namespace AdvancedBuildingsEditor.Detours
             //begin mod
             if (depotAI != null)
             {
-                if (OptionsWrapper<ModOptions>.Options.PreciseSpecialPointsPostions)
+                if (OptionsWrapper<Options>.Options.PreciseSpecialPointsPostions)
                 {
                     var ai = ((DepotAI) ((BuildingInfo) ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI);
                     depotAI.m_spawnPoints = ai.m_spawnPoints;
@@ -344,7 +344,7 @@ namespace AdvancedBuildingsEditor.Detours
                 UnityEngine.Debug.Log("Advanced Buildings Editor: no sub buildings detected");
                 return;
             }
-            if (OptionsWrapper<ModOptions>.Options.SubBuildingsFormat == (int)SubBuildingsFormats.Native)
+            if (OptionsWrapper<Options>.Options.SubBuildingsFormat == (int)SubBuildingsFormats.Native)
             {
                 info.m_subBuildings = fastList.ToArray();
             }

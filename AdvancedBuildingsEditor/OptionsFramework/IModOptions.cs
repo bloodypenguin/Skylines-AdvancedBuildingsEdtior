@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace AdvancedBuildingsEditor.Options
+namespace AdvancedBuildingsEditor.OptionsFramework
 {
     public interface IModOptions
     {
