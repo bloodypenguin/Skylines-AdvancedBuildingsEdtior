@@ -27,9 +27,9 @@ namespace AdvancedBuildingsEditor.Detours
                     continue;
                 }
                 var propInfo = propInstance.Info;
-                if (SpecialPoints.IsSpecialPoint(propInfo))
+                if (SpecialPoints.GetSpecialPointType(propInfo) != SpecialPointType.Unknown)
                 {
-                    var specialPointType = AdvancedBuildingsEditor.SpecialPoints.GetSpecialPointType(propInfo);
+                    var specialPointType = SpecialPoints.GetSpecialPointType(propInfo);
                     specialPoints.Add(index1, specialPointType);
                 }
             }

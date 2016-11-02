@@ -53,7 +53,7 @@ namespace AdvancedBuildingsEditor
                 {
                     continue;
                 }
-                var isSpecialPoint = SpecialPoints.IsSpecialPoint(propInstance.Info);
+                var isSpecialPoint = SpecialPoints.GetSpecialPointType(propInstance.Info) != SpecialPointType.Unknown;
                 if (isSpecialPoint == specialPoints)
                 {
                     instance.ReleaseProp(index1);
