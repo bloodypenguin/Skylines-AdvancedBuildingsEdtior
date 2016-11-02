@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using AdvancedBuildingsEditor.OptionsFramework;
 using AdvancedBuildingsEditor.Redirection;
 using ColossalFramework;
@@ -15,7 +14,28 @@ namespace AdvancedBuildingsEditor.Detours
     {
         public static bool DisableLimits = false;
 
-        public static Dictionary<ushort, SpecialPointType> SpecialPoints = new Dictionary<ushort, SpecialPointType>();
+
+        public static Dictionary<ushort, SpecialPointType> CollectSpecialPoints()
+        {
+            var instance = PropManager.instance;
+            var specialPoints = new Dictionary<ushort, SpecialPointType>();
+            for (ushort index1 = 0; index1 < ushort.MaxValue; ++index1)
+            {
+                var propInstance = instance.m_props.m_buffer[index1];
+                if (propInstance.m_flags == 0)
+                {
+                    continue;
+                }
+                var propInfo = propInstance.Info;
+                if (SpecialPoints.IsSpecialPoint(propInfo))
+                {
+                    var specialPointType = AdvancedBuildingsEditor.SpecialPoints.GetSpecialPointType(propInfo);
+                    specialPoints.Add(index1, specialPointType);
+                }
+            }
+            return specialPoints;
+        }
+
 
         [RedirectMethod]
         public static void LoadDecorations(BuildingInfo source)
@@ -97,34 +117,28 @@ namespace AdvancedBuildingsEditor.Detours
                 {
                     if (ai.m_canInvertTarget)
                     {
-                        PlaceSpecialPoint(matrix4x4, mSpawnPoints[index].m_position, AdvancedBuildingsEditor.SpecialPoints.SpawnPointPosition);
+                        PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_position, SpecialPointType.SpawnPointPosition);
                     }
-                    PlaceSpecialPoint(matrix4x4, mSpawnPoints[index].m_target, AdvancedBuildingsEditor.SpecialPoints.SpawnPointTarget);
+                    PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_target, SpecialPointType.SpawnPointTarget);
                 }
             }
             var ai2 = info.m_buildingAI as CargoStationAI;
             if (ai2 != null)
             {
-                PlaceSpecialPoint(matrix4x4, ai2.m_spawnPosition, AdvancedBuildingsEditor.SpecialPoints.SpawnPointPosition);
-                PlaceSpecialPoint(matrix4x4, ai2.m_spawnTarget, AdvancedBuildingsEditor.SpecialPoints.SpawnPointTarget);
-                PlaceSpecialPoint(matrix4x4, ai2.m_spawnPosition2, AdvancedBuildingsEditor.SpecialPoints.SpawnPoint2Position);
-                PlaceSpecialPoint(matrix4x4, ai2.m_spawnTarget2, AdvancedBuildingsEditor.SpecialPoints.SpawnPoint2Target);
-                PlaceSpecialPoint(matrix4x4, ai2.m_truckSpawnPosition, AdvancedBuildingsEditor.SpecialPoints.TruckSpawnPosition);
-                PlaceSpecialPoint(matrix4x4, ai2.m_truckUnspawnPosition, AdvancedBuildingsEditor.SpecialPoints.TruckDespawnPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition, SpecialPointType.SpawnPointPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget, SpecialPointType.SpawnPointTarget);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition2, SpecialPointType.SpawnPoint2Position);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget2, SpecialPointType.SpawnPoint2Target);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_truckSpawnPosition, SpecialPointType.TruckSpawnPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_truckUnspawnPosition, SpecialPointType.TruckDespawnPosition);
             }
-            Scripts.RecalculateSpecialPoints();
         }
 
-        private static void PlaceSpecialPoint(Matrix4x4 matrix4x4, Vector3 pointLocation, string propName)
+        private static void PlaceSpecialPoint(BuildingInfo info, Matrix4x4 matrix4x4, Vector3 pointLocation, SpecialPointType pointType)
         {
-            var info2 = PrefabCollection<PropInfo>.FindLoaded(propName);
-            if (info2 == null || info2.m_prefabDataIndex == -1)
-            {
-                return;
-            }
-            Vector3 vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
+            var vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
             DisableLimits = true;
-            Scripts.CreateSpecialPoint(info2, vector3);
+            Scripts.CreateSpecialPoint(info, pointType, vector3);
             DisableLimits = false;
         }
 
@@ -164,7 +178,7 @@ namespace AdvancedBuildingsEditor.Detours
             matrix4x4_1.SetTRS(pos, q_1, Vector3.one);
             matrix4x4_1 = matrix4x4_1.inverse;
             PropManager instance1 = Singleton<PropManager>.instance;
-            Scripts.RecalculateSpecialPoints();
+            var specialPoints = CollectSpecialPoints();
             var depotAI = info.m_buildingAI as DepotAI;
             var cargoStationAI = info.m_buildingAI as CargoStationAI; //TODO(earalov): save cargo station's special points
             FastList<DepotAI.SpawnPoint> depotSpawnPoints = new FastList<DepotAI.SpawnPoint>();
@@ -175,12 +189,12 @@ namespace AdvancedBuildingsEditor.Detours
                 {
                     if (depotAI != null)
                     {
-                        if (SpecialPoints.ContainsKey(index))
+                        if (specialPoints.ContainsKey(index))
                         {
                             var targetPosition = instance1.m_props.m_buffer[index].Position;
                             var targetGlobalPosition = matrix4x4_1.MultiplyPoint(targetPosition);
 
-                            switch (SpecialPoints[index])
+                            switch (specialPoints[index])
                             {
                                 case SpecialPointType.SpawnPointTarget:
                                     Vector3 calculatedPositionGlobalPosition;
@@ -188,11 +202,11 @@ namespace AdvancedBuildingsEditor.Detours
                                     {
                                         var minDistance = float.MaxValue;
                                         ushort positionIndex = 0;
-                                        foreach (var pi in SpecialPoints.Where(p => p.Value == SpecialPointType.SpawnPointPosition).Select(p => p.Key))
+                                        foreach (var pi in specialPoints.Where(p => p.Value == SpecialPointType.SpawnPointPosition).Select(p => p.Key))
                                         {
                                             var positionPosition = instance1.m_props.m_buffer[pi].Position;
                                             var distance = Mathf.Abs(Vector3.Distance(targetPosition, positionPosition));
-                                            if (minDistance < distance)
+                                            if (distance > minDistance)
                                             {
                                                 continue;
                                             }
@@ -226,6 +240,10 @@ namespace AdvancedBuildingsEditor.Detours
                             }
                             continue;
                         }
+                    }
+                    else if (cargoStationAI != null)
+                    {
+                        //TODO(earalov): save special points for cargo station
                     }
                     //end mod
                     BuildingInfo.Prop prop = new BuildingInfo.Prop();
@@ -261,7 +279,7 @@ namespace AdvancedBuildingsEditor.Detours
             {
                 if (OptionsWrapper<Options>.Options.PreciseSpecialPointsPostions)
                 {
-                    var ai = ((DepotAI) ((BuildingInfo) ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI);
+                    var ai = (DepotAI) ((BuildingInfo) ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI;
                     depotAI.m_spawnPoints = ai.m_spawnPoints;
                     depotAI.m_spawnPosition = ai.m_spawnPosition;
                     depotAI.m_spawnTarget = ai.m_spawnTarget;

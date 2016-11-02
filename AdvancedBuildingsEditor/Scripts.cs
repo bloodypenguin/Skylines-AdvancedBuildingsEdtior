@@ -46,7 +46,6 @@ namespace AdvancedBuildingsEditor
         public static void ClearProps(bool specialPoints = false)
         {
             var instance = PropManager.instance;
-            BuildingDecorationDetour.SpecialPoints = new Dictionary<ushort, SpecialPointType>();
             for (ushort index1 = 0; index1 < ushort.MaxValue; ++index1)
             {
                 var propInstance = instance.m_props.m_buffer[index1];
@@ -60,41 +59,24 @@ namespace AdvancedBuildingsEditor
                     instance.ReleaseProp(index1);
                 }
             }
-            BuildingDecorationDetour.SpecialPoints = new Dictionary<ushort, SpecialPointType>();
         }
 
-        public static void RecalculateSpecialPoints()
-        {
-            PropManager instance = PropManager.instance;
-            BuildingDecorationDetour.SpecialPoints = new Dictionary<ushort, SpecialPointType>();
-            for (ushort index1 = 0; index1 < ushort.MaxValue; ++index1)
-            {
-                var propInstance = instance.m_props.m_buffer[index1];
-                if (propInstance.m_flags == 0)
-                {
-                    continue;
-                }
-                var propInfo = propInstance.Info;
-                if (SpecialPoints.IsSpecialPoint(propInfo))
-                {
-                    BuildingDecorationDetour.SpecialPoints.Add(index1, SpecialPoints.GetSpecialPointType(propInfo));
-                }
-            }
-        }
+
 
         public static void AutoPlaceSpecialPoints()
         {
             ClearProps(true);
             var instance = NetManager.instance;
-            int counter = 0;
-            var canInvert = true;
-            if (ToolsModifierControl.toolController.m_editPrefabInfo.GetAI() is CargoStationAI)
+            var counter = 0;
+            bool canInvert;
+            var buildingInfo = ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo;
+            if (buildingInfo?.GetAI() is CargoStationAI)
             {
-                canInvert = ((CargoStationAI)ToolsModifierControl.toolController.m_editPrefabInfo.GetAI()).m_canInvertTarget;
+                canInvert = ((CargoStationAI)buildingInfo.GetAI()).m_canInvertTarget;
             }
-            else if (ToolsModifierControl.toolController.m_editPrefabInfo.GetAI() is DepotAI)
+            else if (buildingInfo?.GetAI() is DepotAI)
             {
-                canInvert = ((DepotAI)ToolsModifierControl.toolController.m_editPrefabInfo.GetAI()).m_canInvertTarget;
+                canInvert = ((DepotAI)buildingInfo.GetAI()).m_canInvertTarget;
             }
             else
             {
@@ -112,30 +94,43 @@ namespace AdvancedBuildingsEditor
                 var name = netSegment.Info.name;
                 if ((name == "Bus Station Stop" && name != "Bus Station Way") || name.Contains("Station") || name == "Airplane Stop" || name.Contains("Train Cargo Track"))
                 {
-                    if (counter == 0 || !name.Contains("Train Cargo Track"))
+                    if (name.Contains("Train Cargo Track") && counter > 0)
+                    {
+                        if (counter == 1)
+                        {
+                            if (canInvert)
+                            {
+                                CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
+                            }
+                            CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle);
+                        }
+                    }
+                    else
                     {
                         if (canInvert)
                         {
-                            CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointPosition), middle);
+                            CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
                         }
-                        CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointTarget), middle);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle);
                     }
-                    else if (counter == 1)
-                    {
-                        if (canInvert)
-                        {
-                            CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Position), middle);
-                        }
-                        CreateSpecialPoint(PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Target), middle);
-                    }
+
                     counter++;
                 }
             }
         }
 
 
-        public static void CreateSpecialPoint(PropInfo info, Vector3 position)
+        public static void CreateSpecialPoint(BuildingInfo buildingInfo, SpecialPointType pointType, Vector3 position)
         {
+            var info = SpecialPoints.GetSpecialPointProp(pointType);
+            if (info == null || info.m_prefabDataIndex == -1)
+            {
+                return;
+            }
+            if (!SpecialPoints.IsAppropriatePointType(buildingInfo, pointType))
+            {
+                return;
+            }
             ushort prop;
             if (PropManager.instance.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info,
                 position, 0, true))

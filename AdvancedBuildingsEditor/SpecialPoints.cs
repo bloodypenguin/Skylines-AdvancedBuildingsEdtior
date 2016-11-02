@@ -1,4 +1,5 @@
-﻿using ColossalFramework.Steamworks;
+﻿using System.Linq;
+using ColossalFramework.Steamworks;
 
 namespace AdvancedBuildingsEditor
 {
@@ -14,60 +15,90 @@ namespace AdvancedBuildingsEditor
 
         public static int CountSpecialPoints()
         {
-            var result = 0;
-            foreach (var propInstance in PropManager.instance.m_props.m_buffer)
-            {
-                if (propInstance.m_flags == 0)
-                {
-                    continue;
-                }
-                if (IsSpecialPoint(propInstance.Info))
-                {
-                    result++;
-                }
-            }
-            return result;
-        }
-
-
-        public static bool IsSpecialPoint(PropInfo info)
-        {
-            if (info == null)
-            {
-                return false;
-            }
-            return info.name == SpawnPointPosition || info.name == SpawnPointTarget || info.name == SpawnPoint2Position || info.name == SpawnPoint2Target  || info.name == TruckDespawnPosition || info.name == TruckDespawnPosition;
+            return PropManager.instance.m_props.m_buffer.
+                Where(propInstance => propInstance.m_flags != 0).
+                Count(propInstance => GetSpecialPointType(propInstance.Info) != SpecialPointType.Unknown);
         }
 
         public static SpecialPointType GetSpecialPointType(PropInfo info)
         {
             var pointType = SpecialPointType.Unknown;
-            if (info.name == SpecialPoints.SpawnPointTarget)
+            if (info == null)
             {
-                pointType = SpecialPointType.SpawnPointTarget;
+                return pointType;
             }
-            else if (info.name == SpecialPoints.SpawnPointPosition)
+            switch (info.name)
             {
-                pointType = SpecialPointType.SpawnPointPosition;
-            }
-            else if (info.name == SpecialPoints.SpawnPoint2Target)
-            {
-                pointType = SpecialPointType.SpawnPoint2Target;
-            }
-            else if (info.name == SpecialPoints.SpawnPoint2Position)
-            {
-                pointType = SpecialPointType.SpawnPoint2Position;
-            }
-            else if (info.name == SpecialPoints.TruckDespawnPosition)
-            {
-                pointType = SpecialPointType.TruckDespawnPosition;
-            }
-            else if (info.name == SpecialPoints.TruckSpawnPosition)
-            {
-                pointType = SpecialPointType.TruckSpawnPosition;
+                case SpecialPoints.SpawnPointTarget:
+                    pointType = SpecialPointType.SpawnPointTarget;
+                    break;
+                case SpecialPoints.SpawnPointPosition:
+                    pointType = SpecialPointType.SpawnPointPosition;
+                    break;
+                case SpecialPoints.SpawnPoint2Target:
+                    pointType = SpecialPointType.SpawnPoint2Target;
+                    break;
+                case SpecialPoints.SpawnPoint2Position:
+                    pointType = SpecialPointType.SpawnPoint2Position;
+                    break;
+                case SpecialPoints.TruckDespawnPosition:
+                    pointType = SpecialPointType.TruckDespawnPosition;
+                    break;
+                case SpecialPoints.TruckSpawnPosition:
+                    pointType = SpecialPointType.TruckSpawnPosition;
+                    break;
+                default:
+                    break;
             }
             return pointType;
         }
 
+        public static PropInfo GetSpecialPointProp(SpecialPointType pointType)
+        {
+
+            switch (pointType)
+            {
+                case SpecialPointType.Unknown:
+                    return null;
+                default:
+                    return null;
+                case SpecialPointType.SpawnPointTarget:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointTarget);
+                case SpecialPointType.SpawnPointPosition:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointPosition);
+                case SpecialPointType.SpawnPoint2Target:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Target);
+                case SpecialPointType.SpawnPoint2Position:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Position);
+                case SpecialPointType.TruckDespawnPosition:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.TruckDespawnPosition);
+                case SpecialPointType.TruckSpawnPosition:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.TruckSpawnPosition);
+            }
+        }
+
+        public static bool IsAppropriatePointType(BuildingInfo buildingInfo, SpecialPointType pointType)
+        {
+            if (buildingInfo == null || pointType == SpecialPointType.Unknown)
+            {
+                return false;
+            }
+            if (buildingInfo.m_buildingAI is DepotAI)
+            {
+                if (pointType != SpecialPointType.SpawnPointTarget &&
+                    pointType != SpecialPointType.SpawnPointPosition)
+                {
+                    return false;
+                }
+            }
+            else if (buildingInfo.m_buildingAI is CargoStationAI)
+            {
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
