@@ -44,11 +44,10 @@ namespace AdvancedBuildingsEditor
             Container.SetupPropColors();
 
             Redirector<BuildingDecorationDetour>.Deploy();
-            Redirector<LoadAssetPanelDetour>.Deploy();
-            Redirector<SaveAssetPanelDetour>.Deploy();
             Redirector<PropManagerDetour>.Deploy();
             Redirector<TreeManagerDetour>.Deploy();
             Redirector<AssetEditorChirpPanelDetour>.Deploy();
+            Redirector<DecorationPropertiesPanelDetour>.Deploy();
             SubBuildingsEnablerFormat.InitializeBuildingsWithSubBuildings();
 
             UIView.GetAView().AddUIComponent(typeof(Panel));
@@ -66,9 +65,8 @@ namespace AdvancedBuildingsEditor
         {
             DestroyContainer();
             Redirector<BuildingDecorationDetour>.Revert();
-            Redirector<LoadAssetPanelDetour>.Revert();
-            Redirector<SaveAssetPanelDetour>.Revert();
             Redirector<AssetEditorChirpPanelDetour>.Revert();
+            Redirector<DecorationPropertiesPanelDetour>.Revert();
         }
 
         private static void DestroyContainer()

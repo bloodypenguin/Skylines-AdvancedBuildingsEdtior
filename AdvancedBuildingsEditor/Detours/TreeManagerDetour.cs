@@ -7,7 +7,7 @@ namespace AdvancedBuildingsEditor.Detours
     public class TreeManagerDetour : TreeManager
     {
         [RedirectMethod]
-        public bool CheckLimits()
+        public new bool CheckLimits()
         {
             //begin mod
             if (BuildingDecorationDetour.DisableLimits)

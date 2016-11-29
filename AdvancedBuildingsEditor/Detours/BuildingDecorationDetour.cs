@@ -49,45 +49,8 @@ namespace AdvancedBuildingsEditor.Detours
             BuildingDecoration.LoadPaths(source, (ushort)0, ref data, 0.0f);
             BuildingDecoration.LoadProps(source, (ushort)0, ref data);
             //begin mod
-            LoadSubBuildings((source), (ushort)0, ref data);
             LoadSpecialPoints((source), (ushort)0, ref data);
             //end mod
-        }
-
-        private static void LoadSubBuildings(BuildingInfo info, ushort buildingID, ref Building data)
-        {
-            if (info.m_subBuildings == null || info.m_subBuildings.Length == 0)
-            {
-                return;
-            }
-            UnityEngine.Debug.Log($"Loading sub buildings for {info.name}");
-            Vector3 pos = data.m_position;
-            Quaternion q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
-            Matrix4x4 matrix4x4 = new Matrix4x4();
-            matrix4x4.SetTRS(pos, q, Vector3.one);
-            var instance1 = Singleton<BuildingManager>.instance;
-            for (var index = 0; index < info.m_subBuildings.Length; index = index + 1)
-            {
-                BuildingInfo info1 = info.m_subBuildings[index].m_buildingInfo;
-                if (info1 == null)
-                {
-                    continue;
-                }
-                var propsCopy = info1.m_props;
-                info1.m_props = null;
-                var pathsCopy = info1.m_paths;
-                info1.m_paths = null;
-                var subBuildingsCopy = info1.m_subBuildings;
-                info1.m_subBuildings = null;
-                Vector3 vector3 = matrix4x4.MultiplyPoint(info.m_subBuildings[index].m_position);
-                float angle = data.m_angle + (float)(Math.PI / 180.0) * info.m_subBuildings[index].m_angle;
-
-                instance1.CreateBuilding(out buildingID, ref Singleton<SimulationManager>.instance.m_randomizer, info1, vector3, angle, 0, buildingID);
-
-                info1.m_props = propsCopy;
-                info1.m_paths = pathsCopy;
-                info1.m_subBuildings = subBuildingsCopy;
-            }
         }
 
         public static void LoadSpecialPoints(BuildingInfo info, ushort buildingID, ref Building data)
@@ -140,27 +103,6 @@ namespace AdvancedBuildingsEditor.Detours
             DisableLimits = true;
             Scripts.CreateSpecialPoint(info, pointType, vector3);
             DisableLimits = false;
-        }
-
-        [RedirectMethod]
-        public static void SaveDecorations(BuildingInfo target)
-        {
-            try
-            {
-                Building data = new Building();
-                data.m_position = new Vector3(0.0f, 60f, 0.0f);
-                data.Width = target.m_cellWidth;
-                data.Length = target.m_cellLength;
-                BuildingDecoration.SavePaths(target, (ushort)0, ref data);
-                SaveProps(target, (ushort)0, ref data);
-                //begin mod
-                SaveSubBuildings(target, ref data);
-                //end mod
-            }
-            catch (Exception e)
-            {
-                UnityEngine.Debug.LogException(e);
-            }
         }
 
         [RedirectMethod]
@@ -279,7 +221,7 @@ namespace AdvancedBuildingsEditor.Detours
             {
                 if (OptionsWrapper<Options>.Options.PreciseSpecialPointsPostions)
                 {
-                    var ai = (DepotAI) ((BuildingInfo) ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI;
+                    var ai = (DepotAI)((BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI;
                     depotAI.m_spawnPoints = ai.m_spawnPoints;
                     depotAI.m_spawnPosition = ai.m_spawnPosition;
                     depotAI.m_spawnTarget = ai.m_spawnTarget;
@@ -341,111 +283,5 @@ namespace AdvancedBuildingsEditor.Detours
             info.m_props = fastList.ToArray();
         }
 
-
-
-        public static void SaveSubBuildings(BuildingInfo info, ref Building data)
-        {
-            info.m_subBuildings = new BuildingInfo.SubInfo[] { };
-            var fastList = CollectSubInfos(info, data);
-            foreach (var building in fastList)
-            {
-                if (building.m_buildingInfo == null)
-                {
-                    UnityEngine.Debug.LogError("Advanced Buildings Editor: a sub building's info is null! Sub buildings won't be saved");
-                    return;
-                }
-            }
-            if (fastList.m_size < 1)
-            {
-                UnityEngine.Debug.Log("Advanced Buildings Editor: no sub buildings detected");
-                return;
-            }
-            if (OptionsWrapper<Options>.Options.SubBuildingsFormat == (int)SubBuildingsFormats.Native)
-            {
-                info.m_subBuildings = fastList.ToArray();
-            }
-            else
-            {
-                var config = new SubBuildingsDefinition();
-                config.Buildings.Add(new SubBuildingsDefinition.Building()
-                {
-                    Name = info.name
-                });
-                foreach (var building in fastList.ToArray())
-                {
-                    config.Buildings[0].SubBuildings.Add(new SubBuildingsDefinition.SubBuilding()
-                    {
-                        Angle = building.m_angle,
-                        Name = building.m_buildingInfo.name,
-                        FixedHeight = building.m_fixedHeight,
-                        PosX = building.m_position.x,
-                        PosY = building.m_position.y,
-                        PosZ = building.m_position.z,
-                    });
-                }
-                SubBuildingsDefinition.Save(config);
-            }
-        }
-
-        private static FastList<BuildingInfo.SubInfo> CollectSubInfos(BuildingInfo info, Building data)
-        {
-            FastList<BuildingInfo.SubInfo> fastList = new FastList<BuildingInfo.SubInfo>();
-            Vector3 pos = data.m_position;
-            Quaternion q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
-            Matrix4x4 matrix4x4 = new Matrix4x4();
-            matrix4x4.SetTRS(pos, q, Vector3.one);
-            matrix4x4 = matrix4x4.inverse;
-            BuildingManager instance1 = Singleton<BuildingManager>.instance;
-            for (int index = 0; index < instance1.m_buildings.m_buffer.Length; ++index)
-            {
-                var building = instance1.m_buildings.m_buffer[index];
-                if (((int)building.m_flags & 67) == 1)
-                {
-                    BuildingInfo.SubInfo subInfo = new BuildingInfo.SubInfo();
-                    subInfo.m_buildingInfo = building.Info;
-                    subInfo.m_position = matrix4x4.MultiplyPoint(building.m_position);
-                    subInfo.m_angle = 57.29578f * building.m_angle;
-                    subInfo.m_fixedHeight = info.m_fixedHeight;
-                    fastList.Add(subInfo);
-                }
-            }
-            return fastList;
-        }
-
-        [RedirectMethod]
-        public static void ClearDecorations()
-        {
-            NetManager instance1 = Singleton<NetManager>.instance;
-            for (int index = 1; index < instance1.m_segments.m_buffer.Length; ++index)
-            {
-                if (instance1.m_segments.m_buffer[index].m_flags != NetSegment.Flags.None)
-                    instance1.ReleaseSegment((ushort)index, true);
-            }
-            for (int index = 1; index < instance1.m_nodes.m_buffer.Length; ++index)
-            {
-                if (instance1.m_nodes.m_buffer[index].m_flags != NetNode.Flags.None)
-                    instance1.ReleaseNode((ushort)index);
-            }
-            PropManager instance2 = Singleton<PropManager>.instance;
-            for (int index = 1; index < instance2.m_props.m_buffer.Length; ++index)
-            {
-                if ((int)instance2.m_props.m_buffer[index].m_flags != 0)
-                    instance2.ReleaseProp((ushort)index);
-            }
-            TreeManager instance3 = Singleton<TreeManager>.instance;
-            for (int index = 1; index < instance3.m_trees.m_buffer.Length; ++index)
-            {
-                if ((int)instance3.m_trees.m_buffer[index].m_flags != 0)
-                    instance3.ReleaseTree((uint)index);
-            }
-            //begin mod
-            BuildingManager instance4 = Singleton<BuildingManager>.instance;
-            for (int index = 1; index < instance4.m_buildings.m_buffer.Length; ++index)
-            {
-                if ((int)instance4.m_buildings.m_buffer[index].m_flags != 0)
-                    instance4.ReleaseBuilding((ushort)index);
-            }
-            //end mod
-        }
     }
 }

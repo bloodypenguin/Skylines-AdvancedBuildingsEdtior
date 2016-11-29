@@ -6,7 +6,6 @@ namespace AdvancedBuildingsEditor.Detours
     [TargetType(typeof(PropManager))]
     public class PropManagerDetour : PropManager
     {
-        //TODO(earalov): add similar detour for tree manager
         [RedirectMethod]
         public new bool CheckLimits()
         {

@@ -32,9 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Detours\AssetEditorChirpPanelDetour.cs" />
-    <Compile Include="Detours\AssetImporterAssetImportDetour.cs" />
+    <Compile Include="Detours\DecorationPropertiesPanelDetour.cs" />
     <Compile Include="Detours\PropManagerDetour.cs" />
-    <Compile Include="Detours\SaveAssetPanelDetour.cs" />
     <Compile Include="Detours\TreeManagerDetour.cs" />
     <Compile Include="Loading.cs" />
     <Compile Include="Options.cs" />
@@ -50,7 +49,6 @@
     <Compile Include="Panel.cs" />
     <Compile Include="PropInitializer.cs" />
     <Compile Include="Detours\BuildingDecorationDetour.cs" />
-    <Compile Include="Detours\LoadAssetPanelDetour.cs" />
     <Compile Include="LoadingExtension.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,7 +59,6 @@
     <Compile Include="Redirection\RedirectReverseAttribute.cs" />
     <Compile Include="Redirection\TargetTypeAttribute.cs" />
     <Compile Include="Redirection\Tuple.cs" />
-    <Compile Include="SubBuildingsFormats.cs" />
     <Compile Include="Scripts.cs" />
     <Compile Include="SpecialPoints.cs" />
     <Compile Include="SpecialPointType.cs" />

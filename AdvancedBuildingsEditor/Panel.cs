@@ -1,11 +1,11 @@
-﻿using ColossalFramework.UI;
+﻿using AdvancedBuildingsEditor.Detours;
+using ColossalFramework.UI;
 using UnityEngine;
 
 namespace AdvancedBuildingsEditor
 {
     public class Panel : UIPanel
     {
-        private UIPanel m_SelectRef;
 
         public override void Start()
         {
@@ -58,75 +58,77 @@ namespace AdvancedBuildingsEditor
             seButton.relativePosition = new Vector3(5, 66);
             seButton.eventClick += (comp, param) =>
             {
-                Scripts.MakeAllSegmentsEditable();
+                SimulationManager.instance.AddAction(() =>
+                {
+                    Scripts.MakeAllSegmentsEditable();
+                });
             };
 
             var clearSpecialPointsButton = UIUtil.CreateButton(this, "Clear special points");
             clearSpecialPointsButton.relativePosition = new Vector3(5, 92);
             clearSpecialPointsButton.eventClicked += (component, param) =>
             {
-                Scripts.ClearProps(true);
+                SimulationManager.instance.AddAction(() =>
+                {
+                    Scripts.ClearProps(true);
+                });
             };
 
             var clearPropsButton = UIUtil.CreateButton(this, "Clear props");
             clearPropsButton.relativePosition = new Vector3(5, 118);
             clearPropsButton.eventClicked += (component, param) =>
             {
-                Scripts.ClearProps();
+                SimulationManager.instance.AddAction(() =>
+                {
+                    Scripts.ClearProps();
+                });
             };
 
             var reloadDecorationsButton = UIUtil.CreateButton(this, "Reload Decorations");
             reloadDecorationsButton.relativePosition = new Vector3(5, 144);
             reloadDecorationsButton.eventClicked += (component, param) =>
             {
-                BuildingDecoration.ClearDecorations();
-                BuildingDecoration.LoadDecorations((BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo);
+                SimulationManager.instance.AddAction(() =>
+                {
+                    TerrainModify.UpdateArea(-500f, -500f, 500f, 500f, true, true, true);
+                    BuildingDecoration.ClearDecorations();
+                });
+
+                SimulationManager.instance.AddAction(() =>
+                {
+                    TerrainModify.UpdateArea(-500f, -500f, 500f, 500f, true, true, true);
+                    BuildingDecoration.LoadDecorations((BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo);
+                });
             };
 
             var autoPlaceSpecialPointsButton = UIUtil.CreateButton(this, "Auto-place spawn points");
             autoPlaceSpecialPointsButton.relativePosition = new Vector3(5, 170);
             autoPlaceSpecialPointsButton.eventClicked += (component, param) =>
             {
-                Scripts.AutoPlaceSpecialPoints();
+                SimulationManager.instance.AddAction(Scripts.AutoPlaceSpecialPoints);
             };
 
-            var addSubBuildingButton = UIUtil.CreateButton(this, "Add sub-building");
+            var addSubBuildingButton = UIUtil.CreateButton(this, "Reload sub-buildings");
             addSubBuildingButton.relativePosition = new Vector3(5, 196);
             addSubBuildingButton.eventClicked += (component, param) =>
             {
-                if (ToolsModifierControl.GetCurrentTool<DefaultTool>() == null)
+                var panel = GameObject.FindObjectOfType<DecorationPropertiesPanel>();
+                SimulationManager.instance.AddAction(() =>
                 {
-                    return;
-                }
-                if (m_SelectRef.isVisible)
-                    return;
-                var buildingInfo = ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo;
-                if (buildingInfo == null)
-                    return;
-                var component1 = m_SelectRef.GetComponent<AssetImporterAssetTemplate>();
-                var callbackDelegate = new AssetImporterAssetTemplate.ReferenceCallbackDelegate(
-                    info =>
-                    {
-                        ToolsModifierControl.SetTool<BuildingTool>();
-                        ToolsModifierControl.GetTool<BuildingTool>().m_prefab = (BuildingInfo)info;
-                        m_SelectRef.isVisible = false;
-                    });
-                component1.ReferenceCallback = callbackDelegate;
-                component1.Reset();
-                component1.RefreshWithFilter(AssetImporterAssetTemplate.Filter.Buildings);
-                m_SelectRef.isVisible = true;
+                    TerrainModify.UpdateArea(-500f, -500f, 500f, 500f, true, true, true);
+                    DecorationPropertiesPanelDetour.ClearSubBuildings(panel);
+                });
+                SimulationManager.instance.AddAction(() =>
+                {
+                    TerrainModify.UpdateArea(-500f, -500f, 500f, 500f, true, true, true);
+                    DecorationPropertiesPanelDetour.CreateSubBuildings(panel, (BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo);
+                });
             };
-            this.m_SelectRef = GameObject.Find("SelectReference").GetComponent<UIPanel>();
-            this.m_SelectRef.isVisible = false;
         }
 
-        public void Update()
+        public override void Update()
         {
             isVisible = ToolsModifierControl.toolController.m_editPrefabInfo is BuildingInfo;
-            if (!isVisible)
-            {
-                this.m_SelectRef.isVisible = false;
-            }
             if (isVisible)
             {
                 if (Input.GetKey(KeyCode.Escape))
