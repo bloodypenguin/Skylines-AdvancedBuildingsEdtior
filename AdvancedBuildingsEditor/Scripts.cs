@@ -92,30 +92,33 @@ namespace AdvancedBuildingsEditor
                 var endNode = instance.m_nodes.m_buffer[netSegment.m_endNode].m_position;
                 var middle = new Vector3((startNode.x + endNode.x) / 2, (startNode.y + endNode.y) / 2, (startNode.z + endNode.z) / 2);
                 var name = netSegment.Info.name;
-                if ((name == "Bus Station Stop" && name != "Bus Station Way") || name.Contains("Station") || name == "Airplane Stop" || name.Contains("Train Cargo Track"))
+                if (name == "Bus Station Way")
                 {
-                    if (name.Contains("Train Cargo Track") && counter > 0)
-                    {
-                        if (counter == 1)
-                        {
-                            if (canInvert)
-                            {
-                                CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
-                            }
-                            CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle);
-                        }
-                    }
-                    else
+                    continue;
+                }
+                if (!name.Contains("Station") && name != "Airplane Stop" && !name.Contains("Train Cargo Track"))
+                    continue;
+                if (name.Contains("Train Cargo Track") && counter > 0)
+                {
+                    if (counter == 1)
                     {
                         if (canInvert)
                         {
-                            CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
+                            CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
                         }
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle);
                     }
-
-                    counter++;
                 }
+                else
+                {
+                    if (canInvert)
+                    {
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
+                    }
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle);
+                }
+
+                counter++;
             }
         }
 
