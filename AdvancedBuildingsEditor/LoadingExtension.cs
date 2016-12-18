@@ -48,6 +48,7 @@ namespace AdvancedBuildingsEditor
             Redirector<TreeManagerDetour>.Deploy();
             Redirector<AssetEditorChirpPanelDetour>.Deploy();
             Redirector<DecorationPropertiesPanelDetour>.Deploy();
+            Redirector<SaveAssetPanelDetour>.Deploy();
             SubBuildingsEnablerFormat.InitializeBuildingsWithSubBuildings();
 
             UIView.GetAView().AddUIComponent(typeof(Panel));
@@ -67,6 +68,7 @@ namespace AdvancedBuildingsEditor
             Redirector<BuildingDecorationDetour>.Revert();
             Redirector<AssetEditorChirpPanelDetour>.Revert();
             Redirector<DecorationPropertiesPanelDetour>.Revert();
+            Redirector<SaveAssetPanelDetour>.Revert();
         }
 
         private static void DestroyContainer()
