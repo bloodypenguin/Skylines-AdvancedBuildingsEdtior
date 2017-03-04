@@ -145,7 +145,7 @@ namespace AdvancedBuildingsEditor.Detours
                                     {
                                         if (depotAI != null || spawnPoints.Count < 2)
                                         {
-                                            var calculatedPositionGlobalPosition = depotAI.m_canInvertTarget ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
+                                            var calculatedPositionGlobalPosition = (depotAI != null && depotAI.m_canInvertTarget || cargoStationAI.m_canInvertTarget) ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
                                             if (cargoStationAI == null)
                                             {
                                                 spawnPoints.Add(new DepotAI.SpawnPoint()
@@ -169,7 +169,7 @@ namespace AdvancedBuildingsEditor.Detours
                                     {
                                         if (cargoStationAI != null && spawnPoints.Count < 2)
                                         {
-                                            var calculatedPositionGlobalPosition = depotAI.m_canInvertTarget ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPoint2Position, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
+                                            var calculatedPositionGlobalPosition = cargoStationAI.m_canInvertTarget ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPoint2Position, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
                                             spawnPoints.Add(new DepotAI.SpawnPoint()
                                             {
                                                 m_position = calculatedPositionGlobalPosition.MirrorZ(),
@@ -243,24 +243,21 @@ namespace AdvancedBuildingsEditor.Detours
                 {
                     if (spawnPoints.Count == 1)
                     {
-                        cargoStationAI.m_spawnPosition = spawnPoints[0].m_position;
-                        cargoStationAI.m_spawnTarget = spawnPoints[0].m_target;
-                        cargoStationAI.m_spawnPosition2 = Vector3.zero;
-                        cargoStationAI.m_spawnTarget2 = Vector3.zero;
+                        depotAI.m_spawnPosition = spawnPoints[0].m_position;
+                        depotAI.m_spawnTarget = spawnPoints[0].m_target;
+                        depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
                     }
                     else if (spawnPoints.Count > 1)
                     {
-                        cargoStationAI.m_spawnPosition = spawnPoints[0].m_position;
-                        cargoStationAI.m_spawnTarget = spawnPoints[0].m_target;
-                        cargoStationAI.m_spawnPosition2 = spawnPoints[1].m_position;
-                        cargoStationAI.m_spawnTarget2 = spawnPoints[2].m_target;
+                        depotAI.m_spawnPosition = Vector3.zero;
+                        depotAI.m_spawnTarget = Vector3.zero;
+                        depotAI.m_spawnPoints = spawnPoints.ToArray();
                     }
                     else
                     {
-                        cargoStationAI.m_spawnPosition = Vector3.zero;
-                        cargoStationAI.m_spawnTarget = Vector3.zero;
-                        cargoStationAI.m_spawnPosition2 = Vector3.zero;
-                        cargoStationAI.m_spawnTarget2 = Vector3.zero;
+                        depotAI.m_spawnPosition = Vector3.zero;
+                        depotAI.m_spawnTarget = Vector3.zero;
+                        depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
                     }
                 }
             }
@@ -280,21 +277,24 @@ namespace AdvancedBuildingsEditor.Detours
                 {
                     if (spawnPoints.Count == 1)
                     {
-                        depotAI.m_spawnPosition = spawnPoints[0].m_position;
-                        depotAI.m_spawnTarget = spawnPoints[0].m_target;
-                        depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
+                        cargoStationAI.m_spawnPosition = spawnPoints[0].m_position;
+                        cargoStationAI.m_spawnTarget = spawnPoints[0].m_target;
+                        cargoStationAI.m_spawnPosition2 = Vector3.zero;
+                        cargoStationAI.m_spawnTarget2 = Vector3.zero;
                     }
                     else if (spawnPoints.Count > 1)
                     {
-                        depotAI.m_spawnPosition = Vector3.zero;
-                        depotAI.m_spawnTarget = Vector3.zero;
-                        depotAI.m_spawnPoints = spawnPoints.ToArray();
+                        cargoStationAI.m_spawnPosition = spawnPoints[0].m_position;
+                        cargoStationAI.m_spawnTarget = spawnPoints[0].m_target;
+                        cargoStationAI.m_spawnPosition2 = spawnPoints[1].m_position;
+                        cargoStationAI.m_spawnTarget2 = spawnPoints[1].m_target;
                     }
                     else
                     {
-                        depotAI.m_spawnPosition = Vector3.zero;
-                        depotAI.m_spawnTarget = Vector3.zero;
-                        depotAI.m_spawnPoints = new DepotAI.SpawnPoint[] { };
+                        cargoStationAI.m_spawnPosition = Vector3.zero;
+                        cargoStationAI.m_spawnTarget = Vector3.zero;
+                        cargoStationAI.m_spawnPosition2 = Vector3.zero;
+                        cargoStationAI.m_spawnTarget2 = Vector3.zero;
                     }
                     cargoStationAI.m_truckSpawnPosition = m_truckSpawnPosition;
                     cargoStationAI.m_truckUnspawnPosition = m_truckUnspawnPosition;
