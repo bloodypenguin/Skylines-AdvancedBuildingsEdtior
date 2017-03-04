@@ -116,7 +116,7 @@ namespace AdvancedBuildingsEditor
                 SimulationManager.instance.AddAction(() =>
                 {
                     TerrainModify.UpdateArea(-500f, -500f, 500f, 500f, true, true, true);
-                    DecorationPropertiesPanelDetour.ClearSubBuildings(panel);
+                    DecorationPropertiesPanelDetour.ClearBuildings(panel);
                 });
                 SimulationManager.instance.AddAction(() =>
                 {

@@ -15,7 +15,7 @@ namespace AdvancedBuildingsEditor.Detours
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         [RedirectReverse]
-        public static void ClearSubBuildings(DecorationPropertiesPanel panel)
+        public static void ClearBuildings(DecorationPropertiesPanel panel)
         {
             UnityEngine.Debug.Log("Lalala");
         }
