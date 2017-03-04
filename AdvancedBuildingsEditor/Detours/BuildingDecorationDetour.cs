@@ -139,44 +139,44 @@ namespace AdvancedBuildingsEditor.Detours
                             switch (specialPoints[index])
                             {
                                 case SpecialPointType.SpawnPointTarget:
-                                    Vector3 calculatedPositionGlobalPosition;
-                                    if (depotAI.m_canInvertTarget)
                                     {
-                                        var minDistance = float.MaxValue;
-                                        ushort positionIndex = 0;
-                                        foreach (var pi in specialPoints.Where(p => p.Value == SpecialPointType.SpawnPointPosition).Select(p => p.Key))
+                                        Vector3 calculatedPositionGlobalPosition;
+                                        if (depotAI.m_canInvertTarget)
                                         {
-                                            var positionPosition = instance1.m_props.m_buffer[pi].Position;
-                                            var distance = Mathf.Abs(Vector3.Distance(targetPosition, positionPosition));
-                                            if (distance > minDistance)
+                                            var minDistance = float.MaxValue;
+                                            ushort positionIndex = 0;
+                                            foreach (var pi in specialPoints.Where(p => p.Value == SpecialPointType.SpawnPointPosition).Select(p => p.Key))
                                             {
-                                                continue;
+                                                var positionPosition = instance1.m_props.m_buffer[pi].Position;
+                                                var distance = Mathf.Abs(Vector3.Distance(targetPosition, positionPosition));
+                                                if (distance > minDistance)
+                                                {
+                                                    continue;
+                                                }
+                                                minDistance = distance;
+                                                positionIndex = pi;
                                             }
-                                            minDistance = distance;
-                                            positionIndex = pi;
-                                        }
-                                        if (positionIndex == 0)
-                                        {
-                                            Debug.LogWarning("Couldn't find closest position position for target!");
-                                            calculatedPositionGlobalPosition = targetGlobalPosition;
+                                            if (positionIndex == 0)
+                                            {
+                                                Debug.LogWarning("Couldn't find closest position position for target!");
+                                                calculatedPositionGlobalPosition = targetGlobalPosition;
+                                            }
+                                            else
+                                            {
+                                                calculatedPositionGlobalPosition = matrix4x4_1.MultiplyPoint(instance1.m_props.m_buffer[positionIndex].Position);
+                                            }
                                         }
                                         else
                                         {
-                                            calculatedPositionGlobalPosition = matrix4x4_1.MultiplyPoint(instance1.m_props.m_buffer[positionIndex].Position);
+                                            calculatedPositionGlobalPosition = targetGlobalPosition;
                                         }
+                                        depotSpawnPoints.Add(new DepotAI.SpawnPoint()
+                                        {
+                                            m_position = calculatedPositionGlobalPosition.MirrorZ(),
+                                            m_target = targetGlobalPosition.MirrorZ(),
+                                        });
+                                        break;
                                     }
-                                    else
-                                    {
-                                        calculatedPositionGlobalPosition = targetGlobalPosition;
-                                    }
-                                    depotSpawnPoints.Add(new DepotAI.SpawnPoint()
-                                    {
-                                        m_position = calculatedPositionGlobalPosition.MirrorZ(),
-                                        m_target = targetGlobalPosition.MirrorZ(),
-                                    });
-                                    break;
-                                case SpecialPointType.SpawnPointPosition:
-                                    break;
                                 default:
                                     continue; //ignored
                             }
@@ -185,7 +185,11 @@ namespace AdvancedBuildingsEditor.Detours
                     }
                     else if (cargoStationAI != null)
                     {
-                        //TODO(earalov): save special points for cargo station
+                        if (specialPoints.ContainsKey(index))
+                        {
+                            //TODO(earalov): save special points for cargo station
+                            continue;
+                        }
                     }
                     //end mod
                     BuildingInfo.Prop prop = new BuildingInfo.Prop();
