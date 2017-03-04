@@ -34,7 +34,6 @@
     <Compile Include="Detours\AssetEditorChirpPanelDetour.cs" />
     <Compile Include="Detours\DecorationPropertiesPanelDetour.cs" />
     <Compile Include="Detours\PropManagerDetour.cs" />
-    <Compile Include="Detours\SaveAssetPanelDetour.cs" />
     <Compile Include="Detours\TreeManagerDetour.cs" />
     <Compile Include="Loading.cs" />
     <Compile Include="Options.cs" />
