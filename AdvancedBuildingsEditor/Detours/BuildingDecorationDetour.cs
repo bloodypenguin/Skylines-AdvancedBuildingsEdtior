@@ -146,7 +146,7 @@ namespace AdvancedBuildingsEditor.Detours
                                     {
                                         if (depotAI != null || spawnPoints.Count < 2)
                                         {
-                                            var calculatedPositionGlobalPosition = (depotAI != null && depotAI.m_canInvertTarget || cargoStationAI.m_canInvertTarget) ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
+                                            var calculatedPositionGlobalPosition = (depotAI != null && depotAI.m_canInvertTarget || cargoStationAI != null && cargoStationAI.m_canInvertTarget) ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
                                             if (cargoStationAI == null)
                                             {
                                                 spawnPoints.Add(new DepotAI.SpawnPoint()
