@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AdvancedBuildingsEditor.OptionsFramework;
 using AdvancedBuildingsEditor.Redirection;
 using ColossalFramework;
-using ColossalFramework.Math;
 using UnityEngine;
 
 namespace AdvancedBuildingsEditor.Detours
@@ -54,56 +52,24 @@ namespace AdvancedBuildingsEditor.Detours
             //end mod
         }
 
-        public static void LoadSpecialPoints(BuildingInfo info, ushort buildingID, ref Building data)
+        [RedirectMethod]
+        public static void SaveDecorations(BuildingInfo target)
         {
-            Scripts.ClearProps(true);
-            var pos = data.m_position;
-            var q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
-            var matrix4x4 = new Matrix4x4();
-            matrix4x4.SetTRS(pos, q, Vector3.one);
-
-            var ai = info.m_buildingAI as DepotAI;
-            if (ai != null)
+            Building data = new Building();
+            data.m_position = new Vector3(0.0f, 60f, 0.0f);
+            data.Width = target.m_cellWidth;
+            data.Length = target.m_cellLength;
+            //begin mod
+            if (OptionsWrapper<Options>.Options.PrecisePathsPostions)
             {
-                var mSpawnPoints = ai.m_spawnPoints;
-                if (mSpawnPoints == null || mSpawnPoints.Length == 0)
-                {
-                    mSpawnPoints = new[]
-                    {
-                        new DepotAI.SpawnPoint
-                        {
-                            m_position = ai.m_spawnPosition,
-                            m_target = ai.m_spawnTarget
-                        }
-                    };
-                }
-                for (var index = 0; index < mSpawnPoints.Length; ++index)
-                {
-                    if (ai.m_canInvertTarget)
-                    {
-                        PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_position, SpecialPointType.SpawnPointPosition);
-                    }
-                    PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_target, SpecialPointType.SpawnPointTarget);
-                }
+                SavePrecisePaths(target);
             }
-            var ai2 = info.m_buildingAI as CargoStationAI;
-            if (ai2 != null)
+            else
             {
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition, SpecialPointType.SpawnPointPosition);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget, SpecialPointType.SpawnPointTarget);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition2, SpecialPointType.SpawnPoint2Position);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget2, SpecialPointType.SpawnPoint2Target);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_truckSpawnPosition, SpecialPointType.TruckSpawnPosition);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_truckUnspawnPosition, SpecialPointType.TruckDespawnPosition);
+                BuildingDecoration.SavePaths(target, (ushort)0, ref data);
             }
-        }
-
-        private static void PlaceSpecialPoint(BuildingInfo info, Matrix4x4 matrix4x4, Vector3 pointLocation, SpecialPointType pointType)
-        {
-            var vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
-            DisableLimits = true;
-            Scripts.CreateSpecialPoint(info, pointType, vector3);
-            DisableLimits = false;
+            //end mod
+            BuildingDecoration.SaveProps(target, (ushort)0, ref data);
         }
 
         [RedirectMethod]
@@ -365,121 +331,70 @@ namespace AdvancedBuildingsEditor.Detours
             return calculatedPositionGlobalPosition;
         }
 
-        [RedirectMethod]
-        public static void SavePaths(BuildingInfo info, ushort buildingID, ref Building data)
+        private static void SavePrecisePaths(BuildingInfo info)
         {
             FastList<BuildingInfo.PathInfo> fastList = new FastList<BuildingInfo.PathInfo>();
-            //begin mod
-            if (OptionsWrapper<Options>.Options.PrecisePathsPostions)
+            var building = (BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo;
+            if (building.m_paths != null)
             {
-                var building = (BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo;
-                if (building.m_paths != null)
+                foreach (var pathInfo in building.m_paths.Where(p => p != null))
                 {
-                    foreach (var pathInfo in building.m_paths.Where(p => p != null))
-                    {
-                        fastList.Add(pathInfo);
-                    }
-                }
-                info.m_paths = fastList.ToArray();
-                return;
-            }
-            //end mod
-
-
-            List<ushort> ushortList1 = new List<ushort>();
-            List<ushort> ushortList2 = new List<ushort>();
-            for (ushort index = 1; (int)index < 49152; ++index)
-            {
-                if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)index].m_flags != Building.Flags.None)
-                {
-                    ushortList1.AddRange((IEnumerable<ushort>)BuildingDecoration.GetBuildingSegments(ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)index]));
-                    ushortList2.Add(index);
-                }
-            }
-            NetManager instance = Singleton<NetManager>.instance;
-            for (int index = 0; index < 36864; ++index)
-            {
-                if ((instance.m_segments.m_buffer[index].m_flags & (NetSegment.Flags.Created | NetSegment.Flags.Deleted)) == NetSegment.Flags.Created && !ushortList1.Contains((ushort)index))
-                {
-                    NetInfo info1 = instance.m_segments.m_buffer[index].Info;
-                    ushort startNode = instance.m_segments.m_buffer[index].m_startNode;
-                    ushort endNode = instance.m_segments.m_buffer[index].m_endNode;
-                    Vector3 position1 = instance.m_nodes.m_buffer[(int)startNode].m_position;
-                    Vector3 position2 = instance.m_nodes.m_buffer[(int)endNode].m_position;
-                    Vector3 startDirection = instance.m_segments.m_buffer[index].m_startDirection;
-                    Vector3 endDirection = instance.m_segments.m_buffer[index].m_endDirection;
-                    Vector3 vector3;
-                    if (NetSegment.IsStraight(position1, startDirection, position2, endDirection))
-                    {
-                        vector3 = (position1 + position2) * 0.5f;
-                    }
-                    else
-                    {
-                        float u;
-                        float v;
-                        if (Line2.Intersect(VectorUtils.XZ(position1), VectorUtils.XZ(position1 + startDirection), VectorUtils.XZ(position2), VectorUtils.XZ(position2 + endDirection), out u, out v))
-                        {
-                            float minNodeDistance = info1.GetMinNodeDistance();
-                            u = Mathf.Max(minNodeDistance, u);
-                            v = Mathf.Max(minNodeDistance, v);
-                            vector3 = (position1 + startDirection * u + position2 + endDirection * v) * 0.5f;
-                        }
-                        else
-                            vector3 = (position1 + position2) * 0.5f;
-                    }
-                    BuildingInfo.PathInfo pathInfo = new BuildingInfo.PathInfo();
-                    pathInfo.m_netInfo = info1;
-                    pathInfo.m_nodes = new Vector3[2];
-                    pathInfo.m_nodes[0] = position1 - data.m_position;
-                    pathInfo.m_nodes[0].z = -pathInfo.m_nodes[0].z;
-                    pathInfo.m_nodes[1] = position2 - data.m_position;
-                    pathInfo.m_nodes[1].z = -pathInfo.m_nodes[1].z;
-                    pathInfo.m_curveTargets = new Vector3[1];
-                    pathInfo.m_curveTargets[0] = vector3 - data.m_position;
-                    pathInfo.m_curveTargets[0].z = -pathInfo.m_curveTargets[0].z;
-                    pathInfo.m_forbidLaneConnection = new bool[2];
-                    pathInfo.m_forbidLaneConnection[0] = (instance.m_nodes.m_buffer[(int)startNode].m_flags & NetNode.Flags.ForbidLaneConnection) != NetNode.Flags.None;
-                    pathInfo.m_forbidLaneConnection[1] = (instance.m_nodes.m_buffer[(int)endNode].m_flags & NetNode.Flags.ForbidLaneConnection) != NetNode.Flags.None;
-                    pathInfo.m_maxSnapDistance = info.m_placementMode != BuildingInfo.PlacementMode.Roadside || (double)position1.z <= (double)info.m_cellLength * 4.0 + 8.0 && (double)position2.z <= (double)info.m_cellLength * 4.0 + 8.0 ? 0.1f : 7.5f;
-                    pathInfo.m_invertSegments = (instance.m_segments.m_buffer[index].m_flags & NetSegment.Flags.Invert) != NetSegment.Flags.None;
                     fastList.Add(pathInfo);
                 }
             }
-            for (int index = 0; index < 32768; ++index)
+            info.m_paths = fastList.ToArray();
+        }
+
+        public static void LoadSpecialPoints(BuildingInfo info, ushort buildingID, ref Building data)
+        {
+            Scripts.ClearProps(true);
+            var pos = data.m_position;
+            var q = Quaternion.AngleAxis(data.m_angle * 57.29578f, Vector3.down);
+            var matrix4x4 = new Matrix4x4();
+            matrix4x4.SetTRS(pos, q, Vector3.one);
+
+            var ai = info.m_buildingAI as DepotAI;
+            if (ai != null)
             {
-                if ((instance.m_nodes.m_buffer[index].m_flags & (NetNode.Flags.Created | NetNode.Flags.Deleted)) == NetNode.Flags.Created && instance.m_nodes.m_buffer[index].CountSegments() == 0)
+                var mSpawnPoints = ai.m_spawnPoints;
+                if (mSpawnPoints == null || mSpawnPoints.Length == 0)
                 {
-                    bool flag = false;
-                    using (List<ushort>.Enumerator enumerator = ushortList2.GetEnumerator())
+                    mSpawnPoints = new[]
                     {
-                        while (enumerator.MoveNext())
+                        new DepotAI.SpawnPoint
                         {
-                            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)enumerator.Current].ContainsNode((ushort)index))
-                            {
-                                flag = true;
-                                break;
-                            }
+                            m_position = ai.m_spawnPosition,
+                            m_target = ai.m_spawnTarget
                         }
-                    }
-                    if (!flag)
+                    };
+                }
+                for (var index = 0; index < mSpawnPoints.Length; ++index)
+                {
+                    if (ai.m_canInvertTarget)
                     {
-                        NetInfo info1 = instance.m_nodes.m_buffer[index].Info;
-                        Vector3 position = instance.m_nodes.m_buffer[index].m_position;
-                        BuildingInfo.PathInfo pathInfo = new BuildingInfo.PathInfo();
-                        pathInfo.m_netInfo = info1;
-                        pathInfo.m_nodes = new Vector3[1];
-                        pathInfo.m_nodes[0] = position - data.m_position;
-                        pathInfo.m_nodes[0].z = -pathInfo.m_nodes[0].z;
-                        pathInfo.m_curveTargets = new Vector3[0];
-                        pathInfo.m_forbidLaneConnection = new bool[1];
-                        pathInfo.m_forbidLaneConnection[0] = (instance.m_nodes.m_buffer[index].m_flags & NetNode.Flags.ForbidLaneConnection) != NetNode.Flags.None;
-                        pathInfo.m_maxSnapDistance = 0.1f;
-                        pathInfo.m_invertSegments = false;
-                        fastList.Add(pathInfo);
+                        PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_position, SpecialPointType.SpawnPointPosition);
                     }
+                    PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_target, SpecialPointType.SpawnPointTarget);
                 }
             }
-            info.m_paths = fastList.ToArray();
+            var ai2 = info.m_buildingAI as CargoStationAI;
+            if (ai2 != null)
+            {
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition, SpecialPointType.SpawnPointPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget, SpecialPointType.SpawnPointTarget);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition2, SpecialPointType.SpawnPoint2Position);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget2, SpecialPointType.SpawnPoint2Target);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_truckSpawnPosition, SpecialPointType.TruckSpawnPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai2.m_truckUnspawnPosition, SpecialPointType.TruckDespawnPosition);
+            }
+        }
+
+        private static void PlaceSpecialPoint(BuildingInfo info, Matrix4x4 matrix4x4, Vector3 pointLocation, SpecialPointType pointType)
+        {
+            var vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
+            DisableLimits = true;
+            Scripts.CreateSpecialPoint(info, pointType, vector3);
+            DisableLimits = false;
         }
     }
 }
