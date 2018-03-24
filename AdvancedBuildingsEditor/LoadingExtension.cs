@@ -14,6 +14,10 @@ namespace AdvancedBuildingsEditor
         public override void OnCreated(ILoading loading)
         {
             base.OnCreated(loading);
+            if (loading.currentMode != AppMode.AssetEditor)
+            {
+                return;
+            }
             if (Container == null)
             {
                 Container = new GameObject("SubBuildingsEditor").AddComponent<PropInitializer>();
