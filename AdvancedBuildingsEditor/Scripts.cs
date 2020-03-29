@@ -9,7 +9,7 @@ namespace AdvancedBuildingsEditor
     public static class Scripts
     {
 
-        public static void MakeAllSegmentsEditable(bool makeAllNetworksEditable = true)
+        public static void MakeAllSegmentsEditable()
         {
             var mgr = NetManager.instance;
             for (var i = 0; i < mgr.m_segments.m_size; i++)
@@ -18,10 +18,36 @@ namespace AdvancedBuildingsEditor
                 {
                     continue;
                 }
-                Debug.Log($"Segment {i} -  Type: {mgr.m_segments.m_buffer[i].Info.name}, Length: {mgr.m_segments.m_buffer[i].m_averageLength}");
-                if (makeAllNetworksEditable)
+                mgr.m_segments.m_buffer[i].m_flags &= ~NetSegment.Flags.Untouchable;
+            }
+
+            MakeConnectionsEditable();
+        }
+
+        private static void MakeConnectionsEditable()
+        {
+            var prefabNames = new string[]
+            {
+                "Pedestrian Connection",
+                "Pedestrian Connection Surface",
+                "Pedestrian Connection Inside",
+                "Pedestrian Connection Underground",
+                "Cargo Connection"
+            };
+            foreach (var prefabName in prefabNames)
+            {
+                var prefab = PrefabCollection<NetInfo>.FindLoaded(prefabName);
+                prefab.m_class.m_layer = ItemClass.Layer.Default;
+                prefab.m_netLayers = 512;
+                prefab.m_maxPropDistance = 1000f;
+                foreach (var segment in prefab.m_segments)
                 {
-                    mgr.m_segments.m_buffer[i].m_flags &= ~NetSegment.Flags.Untouchable;
+                    segment.m_layer = 9;
+                }
+
+                foreach (var node in prefab.m_nodes)
+                {
+                    node.m_layer = 9;
                 }
             }
         }
