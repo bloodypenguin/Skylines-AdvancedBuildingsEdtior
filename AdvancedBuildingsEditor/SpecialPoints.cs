@@ -6,6 +6,9 @@ namespace AdvancedBuildingsEditor
     {
         public const string SpawnPointTarget = "Spawn Point Target";
         public const string SpawnPointPosition = "Spawn Point Position";
+        public const string DespawnPointTarget = "Despawn Point Target";
+        public const string DespawnPointPosition = "Despawn Point Position";
+
 
         public const string SpawnPoint2Target = "Spawn Point 2 Target";
         public const string SpawnPoint2Position = "Spawn Point 2 Position";
@@ -46,6 +49,12 @@ namespace AdvancedBuildingsEditor
                 case SpecialPoints.TruckSpawnPosition:
                     pointType = SpecialPointType.TruckSpawnPosition;
                     break;
+                case SpecialPoints.DespawnPointTarget:
+                    pointType = SpecialPointType.DespawnPointTarget;
+                    break;
+                case SpecialPoints.DespawnPointPosition:
+                    pointType = SpecialPointType.DespawnPointPosition;
+                    break;
                 default:
                     break;
             }
@@ -65,6 +74,10 @@ namespace AdvancedBuildingsEditor
                     return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointTarget);
                 case SpecialPointType.SpawnPointPosition:
                     return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPointPosition);
+                case SpecialPointType.DespawnPointTarget:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.DespawnPointTarget);
+                case SpecialPointType.DespawnPointPosition:
+                    return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.DespawnPointPosition);
                 case SpecialPointType.SpawnPoint2Target:
                     return PrefabCollection<PropInfo>.FindLoaded(SpecialPoints.SpawnPoint2Target);
                 case SpecialPointType.SpawnPoint2Position:
@@ -92,6 +105,25 @@ namespace AdvancedBuildingsEditor
             }
             else if (buildingInfo.m_buildingAI is CargoStationAI)
             {
+                if (pointType != SpecialPointType.SpawnPointTarget &&
+                    pointType != SpecialPointType.SpawnPointPosition &&
+                    pointType != SpecialPointType.SpawnPoint2Position &&
+                    pointType != SpecialPointType.SpawnPoint2Target &&
+                    pointType != SpecialPointType.TruckSpawnPosition &&
+                    pointType != SpecialPointType.TruckDespawnPosition)
+                {
+                    return false;
+                }
+            }
+            else if (buildingInfo.m_buildingAI is FishingHarborAI)
+            {
+                if (pointType != SpecialPointType.SpawnPointTarget &&
+                    pointType != SpecialPointType.SpawnPointPosition &&
+                    pointType != SpecialPointType.DespawnPointTarget &&
+                    pointType != SpecialPointType.DespawnPointPosition)
+                {
+                    return false;
+                }
             }
             else
             {

@@ -353,8 +353,7 @@ namespace AdvancedBuildingsEditor.Detours
             var matrix4x4 = new Matrix4x4();
             matrix4x4.SetTRS(pos, q, Vector3.one);
 
-            var ai = info.m_buildingAI as DepotAI;
-            if (ai != null)
+            if (info.m_buildingAI is DepotAI ai)
             {
                 var mSpawnPoints = ai.m_spawnPoints;
                 if (mSpawnPoints == null || mSpawnPoints.Length == 0)
@@ -377,8 +376,7 @@ namespace AdvancedBuildingsEditor.Detours
                     PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_target, SpecialPointType.SpawnPointTarget);
                 }
             }
-            var ai2 = info.m_buildingAI as CargoStationAI;
-            if (ai2 != null)
+            if (info.m_buildingAI is CargoStationAI ai2)
             {
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition, SpecialPointType.SpawnPointPosition);
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget, SpecialPointType.SpawnPointTarget);
@@ -386,6 +384,13 @@ namespace AdvancedBuildingsEditor.Detours
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget2, SpecialPointType.SpawnPoint2Target);
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_truckSpawnPosition, SpecialPointType.TruckSpawnPosition);
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_truckUnspawnPosition, SpecialPointType.TruckDespawnPosition);
+            }
+            if (info.m_buildingAI is FishingHarborAI ai3)
+            {
+                PlaceSpecialPoint(info, matrix4x4, ai3.m_boatUnspawnPosition, SpecialPointType.DespawnPointPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai3.m_boatSpawnPosition, SpecialPointType.SpawnPointPosition);
+                PlaceSpecialPoint(info, matrix4x4, ai3.m_boatUnspawnTarget, SpecialPointType.DespawnPointTarget);
+                PlaceSpecialPoint(info, matrix4x4, ai3.m_boatSpawnTarget, SpecialPointType.SpawnPointTarget);
             }
         }
 

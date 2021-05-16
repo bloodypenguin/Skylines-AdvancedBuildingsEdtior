@@ -30,14 +30,23 @@ namespace AdvancedBuildingsEditor
             _customPrefabs[SpecialPoints.SpawnPointTarget].m_color2 = Color.cyan;
             _customPrefabs[SpecialPoints.SpawnPointTarget].m_color3 = Color.cyan;
 
-            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color0 = Color.magenta;
-            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color1 = Color.magenta;
-            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color2 = Color.magenta;
-            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color3 = Color.magenta;
-            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color0 = Color.yellow;
-            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color1 = Color.yellow;
-            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color2 = Color.yellow;
-            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color3 = Color.yellow;
+            _customPrefabs[SpecialPoints.DespawnPointPosition].m_color0 = Color.magenta;
+            _customPrefabs[SpecialPoints.DespawnPointPosition].m_color1 = Color.magenta;
+            _customPrefabs[SpecialPoints.DespawnPointPosition].m_color2 = Color.magenta;
+            _customPrefabs[SpecialPoints.DespawnPointPosition].m_color3 = Color.magenta;
+            _customPrefabs[SpecialPoints.DespawnPointTarget].m_color0 = new Color(238f/255f,130f/255f,238f/255f);
+            _customPrefabs[SpecialPoints.DespawnPointTarget].m_color1 = new Color(238f/255f,130f/255f,238f/255f);
+            _customPrefabs[SpecialPoints.DespawnPointTarget].m_color2 = new Color(238f/255f,130f/255f,238f/255f);
+            _customPrefabs[SpecialPoints.DespawnPointTarget].m_color3 = new Color(238f/255f,130f/255f,238f/255f);
+            
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color0 = new Color(75f/255f,0,130f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color1 = new Color(75f/255f,0,130f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color2 = new Color(75f/255f,0,130f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Position].m_color3 =new Color(75f/255f,0,130f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color0 = new Color(147f/255f,112f/255f,219f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color1 = new Color(147f/255f,112f/255f,219f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color2 = new Color(147f/255f,112f/255f,219f/255f);
+            _customPrefabs[SpecialPoints.SpawnPoint2Target].m_color3 = new Color(147f/255f,112f/255f,219f/255f);
 
             _customPrefabs[SpecialPoints.TruckSpawnPosition].m_color0 = Color.green;
             _customPrefabs[SpecialPoints.TruckSpawnPosition].m_color1 = Color.green;
@@ -118,6 +127,14 @@ namespace AdvancedBuildingsEditor
                 info.m_availableIn = ItemClass.Availability.AssetEditor;
             });
             CreatePrefab(SpecialPoints.TruckSpawnPosition, "Door Marker", info =>
+            {
+                info.m_availableIn = ItemClass.Availability.AssetEditor;
+            });
+            CreatePrefab(SpecialPoints.DespawnPointPosition, "Door Marker", info =>
+            {
+                info.m_availableIn = ItemClass.Availability.AssetEditor;
+            });
+            CreatePrefab(SpecialPoints.DespawnPointTarget, "Door Marker", info =>
             {
                 info.m_availableIn = ItemClass.Availability.AssetEditor;
             });
