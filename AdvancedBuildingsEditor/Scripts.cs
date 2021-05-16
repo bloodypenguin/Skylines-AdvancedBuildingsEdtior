@@ -32,11 +32,17 @@ namespace AdvancedBuildingsEditor
                 "Pedestrian Connection Surface",
                 "Pedestrian Connection Inside",
                 "Pedestrian Connection Underground",
-                "Cargo Connection"
+                "Cargo Connection",
+                "Ferry Path",
             };
             foreach (var prefabName in prefabNames)
             {
                 var prefab = PrefabCollection<NetInfo>.FindLoaded(prefabName);
+                if ("Cargo Connection".Equals(prefabName))
+                {
+                    prefab.m_hasForwardVehicleLanes = true;
+                    prefab.m_forwardVehicleLaneCount = 1;
+                }
                 prefab.m_class.m_layer = ItemClass.Layer.Default;
                 prefab.m_netLayers = 512;
                 prefab.m_maxPropDistance = 1000f;
@@ -122,7 +128,9 @@ namespace AdvancedBuildingsEditor
                 {
                     continue;
                 }
-                if (!name.Contains("Station") && name != "Airplane Stop" && !name.Contains("Train Cargo Track"))
+                if (!name.Contains("Station") && name != "Airplane Stop" && !name.Contains("Train Cargo Track") && name != "Airplane Cargo Stop"
+                    && !(buildingInfo?.GetAI() is CargoHarborAI && (name.Contains("Ferry Path") || name.Contains("Ship Dock")))
+                )
                     continue;
                 if (name.Contains("Train Cargo Track") && counter > 0)
                 {
@@ -132,7 +140,7 @@ namespace AdvancedBuildingsEditor
                         {
                             CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
                         }
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle + new Vector3(-0.5f, 0.0f));
                     }
                 }
                 else
@@ -141,7 +149,7 @@ namespace AdvancedBuildingsEditor
                     {
                         CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
                     }
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle + new Vector3(-0.5f, 0.0f));
                 }
 
                 counter++;
