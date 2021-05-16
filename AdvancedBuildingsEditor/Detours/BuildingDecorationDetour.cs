@@ -177,7 +177,7 @@ namespace AdvancedBuildingsEditor.Detours
                     prop.m_fixedHeight = instance1.m_props.m_buffer[index].FixedHeight;
                     //begin mod
                     var flag = false;
-                    foreach (var mProp in info.m_props)
+                    foreach (var mProp in info.m_props ?? new BuildingInfo.Prop[]{})
                     {
                         if (mProp.m_prop != prop.m_prop || Vector3.Distance(mProp.m_position, prop.m_position) > 0.01)
                         {
@@ -280,7 +280,7 @@ namespace AdvancedBuildingsEditor.Detours
                     prop.m_fixedHeight = instance2.m_trees.m_buffer[index].FixedHeight;
                     //begin mod
                     var flag = false;
-                    foreach (var mProp in info.m_props)
+                    foreach (var mProp in info.m_props ?? new BuildingInfo.Prop[]{})
                     {
                         if (mProp.m_tree != prop.m_tree || Vector3.Distance(mProp.m_position, prop.m_position) > 0.01)
                         {
