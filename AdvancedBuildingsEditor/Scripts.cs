@@ -154,6 +154,7 @@ namespace AdvancedBuildingsEditor
                 var endNode = instance.m_nodes.m_buffer[netSegment.m_endNode].m_position;
                 var middle = new Vector3((startNode.x + endNode.x) / 2, (startNode.y + endNode.y) / 2, (startNode.z + endNode.z) / 2);
                 var name = netSegment.Info.name;
+                
                 if (name == "Fishing Dockway")
                 {
                     if (fishingDockwayCounter == 0)
@@ -217,10 +218,19 @@ namespace AdvancedBuildingsEditor
                 return;
             }
             ushort prop;
-            if (PropManager.instance.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer, info,
-                position, 0, true))
+            BuildingDecorationDetour.DisableLimits = true;
+            try
             {
-                PropManager.instance.m_props.m_buffer[(int)prop].FixedHeight = true;
+                if (PropManager.instance.CreateProp(out prop, ref Singleton<SimulationManager>.instance.m_randomizer,
+                    info,
+                    position, 0, true))
+                {
+                    PropManager.instance.m_props.m_buffer[(int) prop].FixedHeight = true;
+                }
+            }
+            finally
+            {
+                BuildingDecorationDetour.DisableLimits = false;
             }
         }
     }

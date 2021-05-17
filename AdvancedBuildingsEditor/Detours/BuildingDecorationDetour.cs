@@ -501,8 +501,14 @@ namespace AdvancedBuildingsEditor.Detours
         {
             var vector3 = matrix4x4.MultiplyPoint(pointLocation).MirrorZ();
             DisableLimits = true;
-            Scripts.CreateSpecialPoint(info, pointType, vector3);
-            DisableLimits = false;
+            try
+            {
+                Scripts.CreateSpecialPoint(info, pointType, vector3);
+            }
+            finally
+            {
+                DisableLimits = false;   
+            }
         }
     }
 }
