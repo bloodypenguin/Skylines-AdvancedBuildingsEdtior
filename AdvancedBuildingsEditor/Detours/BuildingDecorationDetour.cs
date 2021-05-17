@@ -429,10 +429,16 @@ namespace AdvancedBuildingsEditor.Detours
             }
             if (info.m_buildingAI is CargoStationAI ai2)
             {
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition, SpecialPointType.SpawnPointPosition);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget, SpecialPointType.SpawnPointTarget);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition2, SpecialPointType.SpawnPoint2Position);
-                PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget2, SpecialPointType.SpawnPoint2Target);
+                if (ai2.m_transportInfo != null)
+                {
+                    PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition, SpecialPointType.SpawnPointPosition);
+                    PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget, SpecialPointType.SpawnPointTarget);                    
+                }
+                if (ai2.m_transportInfo2 != null)
+                {
+                    PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnPosition2, SpecialPointType.SpawnPoint2Position);
+                    PlaceSpecialPoint(info, matrix4x4, ai2.m_spawnTarget2, SpecialPointType.SpawnPoint2Target);                    
+                }
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_truckSpawnPosition, SpecialPointType.TruckSpawnPosition);
                 PlaceSpecialPoint(info, matrix4x4, ai2.m_truckUnspawnPosition, SpecialPointType.TruckDespawnPosition);
             }
