@@ -112,16 +112,19 @@ namespace AdvancedBuildingsEditor
             var instance = NetManager.instance;
             var counter = 0;
             bool canInvert;
+            bool canInvert2; //TODO: make use of it below
             var buildingInfo = ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo;
             if (buildingInfo?.GetAI() is CargoStationAI)
             {
                 canInvert = ((CargoStationAI)buildingInfo.GetAI()).m_canInvertTarget;
+                canInvert2 = ((CargoStationAI)buildingInfo.GetAI()).m_canInvertTarget2;
             }
             else if (buildingInfo?.GetAI() is DepotAI)
             {
                 canInvert = ((DepotAI)buildingInfo.GetAI()).m_canInvertTarget;
+                canInvert2 = ((DepotAI)buildingInfo.GetAI()).m_canInvertTarget2;
             }
-            else
+            else //TODO: add handling of fishing
             {
                 return;
             }
@@ -146,6 +149,7 @@ namespace AdvancedBuildingsEditor
                     &&  name != "Ferry Dock" && name != "Ship Dock"
                 )
                     continue;
+                //TODO: provide a more generic solution that could work with passenger hubs too
                 if (name.Contains("Train Cargo Track") && counter > 0)
                 {
                     if (counter == 1)
