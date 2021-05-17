@@ -90,8 +90,11 @@ namespace AdvancedBuildingsEditor.Detours
             var specialPoints = CollectSpecialPoints();
             var depotAI = info.m_buildingAI as DepotAI;
             var cargoStationAI = info.m_buildingAI as CargoStationAI;
+            var fishingHarborAI = info.m_buildingAI as FishingHarborAI;
             List<DepotAI.SpawnPoint> spawnPoints = new List<DepotAI.SpawnPoint>();
             List<DepotAI.SpawnPoint> spawnPoints2 = new List<DepotAI.SpawnPoint>();
+            Vector3 unspawnPosition = Vector3.zero;
+            Vector3 unspawnTarget = Vector3.zero;
 
             Vector3 truckSpawnPosition = Vector3.zero;
             Vector3 truckUnspawnPosition = Vector3.zero;
@@ -103,7 +106,7 @@ namespace AdvancedBuildingsEditor.Detours
                 {
                     if (specialPoints.ContainsKey(index))
                     {
-                        if (depotAI != null || cargoStationAI != null)
+                        if (depotAI != null || cargoStationAI != null || fishingHarborAI != null)
                         {
                             var position = instance1.m_props.m_buffer[index].Position;
                             var globalPosition = matrix4x4_1.MultiplyPoint(position);
@@ -111,42 +114,45 @@ namespace AdvancedBuildingsEditor.Detours
                             {
                                 case SpecialPointType.SpawnPointTarget:
                                     {
-                                        if (depotAI != null || spawnPoints.Count < 2)
+                                        var calculatedPositionGlobalPosition = 
+                                            FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1);
+                                        spawnPoints.Add(new DepotAI.SpawnPoint()
                                         {
-                                            var calculatedPositionGlobalPosition = (depotAI != null && depotAI.m_canInvertTarget || cargoStationAI != null && cargoStationAI.m_canInvertTarget) ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
-                                            if (cargoStationAI == null)
-                                            {
-                                                spawnPoints.Add(new DepotAI.SpawnPoint()
-                                                {
-                                                    m_position = calculatedPositionGlobalPosition.MirrorZ(),
-                                                    m_target = globalPosition.MirrorZ(),
-                                                });
-                                            }
-                                            else
-                                            {
-                                                spawnPoints.Insert(0, new DepotAI.SpawnPoint()
-                                                {
-                                                    m_position = calculatedPositionGlobalPosition.MirrorZ(),
-                                                    m_target = globalPosition.MirrorZ(),
-                                                });
-                                            }
-                                        }
+                                            m_position = calculatedPositionGlobalPosition.MirrorZ(),
+                                            m_target = globalPosition.MirrorZ(),
+                                        });
                                         break;
                                     }
                                 case SpecialPointType.SpawnPoint2Target:
                                     {
-                                        //TODO: add handling of passenger hub
-                                        if (cargoStationAI != null && spawnPoints2.Count < 2)
+                                        if (depotAI != null || cargoStationAI != null)
                                         {
-                                            var calculatedPositionGlobalPosition = cargoStationAI.m_canInvertTarget2 ? FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPoint2Position, instance1, position, globalPosition, matrix4x4_1) : globalPosition;
+                                            var calculatedPositionGlobalPosition = 
+                                                FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPoint2Position, instance1, position, globalPosition, matrix4x4_1);
                                             spawnPoints2.Add(new DepotAI.SpawnPoint()
                                             {
                                                 m_position = calculatedPositionGlobalPosition.MirrorZ(),
                                                 m_target = globalPosition.MirrorZ(),
-                                            });
+                                            });                                            
                                         }
                                         break;
                                     }
+                                case SpecialPointType.DespawnPointPosition:
+                                {
+                                    if (fishingHarborAI != null)
+                                    {
+                                        unspawnPosition = globalPosition.MirrorZ();
+                                    }
+                                    break;
+                                }
+                                case SpecialPointType.DespawnPointTarget:
+                                {
+                                    if (cargoStationAI != null)
+                                    {
+                                        unspawnTarget = globalPosition.MirrorZ();
+                                    }
+                                    break;
+                                }
                                 case SpecialPointType.TruckSpawnPosition:
                                     {
                                         if (cargoStationAI != null)
@@ -333,7 +339,11 @@ namespace AdvancedBuildingsEditor.Detours
                     cargoStationAI.m_truckUnspawnPosition = truckUnspawnPosition;
                 }
             }
-            //TODO: add handling of fishing harbor
+
+            if (fishingHarborAI != null)
+            {
+                //TODO: add handling of fishing harbor                
+            }
             //end mod
             TreeManager instance2 = Singleton<TreeManager>.instance;
             for (int index = 0; index < instance2.m_trees.m_buffer.Length; ++index)
