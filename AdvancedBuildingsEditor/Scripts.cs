@@ -128,8 +128,11 @@ namespace AdvancedBuildingsEditor
                 {
                     continue;
                 }
-                if (!name.Contains("Station") && name != "Airplane Stop" && !name.Contains("Train Cargo Track") && name != "Airplane Cargo Stop"
-                    && !(buildingInfo?.GetAI() is CargoHarborAI && (name.Contains("Ferry Path") || name.Contains("Ship Dock")))
+                if (!name.Contains("Station")
+                    && name != "Airplane Stop" && name != "Blimp Stop" && name != "Helicopter Stop" 
+                    && !name.Contains("Train Cargo Track") && name != "Airplane Cargo Stop" 
+                    && !(buildingInfo?.GetAI() is CargoHarborAI && name.Contains("Ferry Path")) 
+                    &&  name != "Ferry Dock" && name != "Ship Dock"
                 )
                     continue;
                 if (name.Contains("Train Cargo Track") && counter > 0)
