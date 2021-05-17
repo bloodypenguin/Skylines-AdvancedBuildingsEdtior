@@ -36,6 +36,8 @@ namespace AdvancedBuildingsEditor
                 "Ferry Path",
                 "Ferry Dock",
                 "Ferry Dockway",
+                "Ship Dock",
+                "Ship Dockway",
                 "Fishing Dockway",
                 "Helicopter Path",
                 "Helicopter Stop",
@@ -110,13 +112,38 @@ namespace AdvancedBuildingsEditor
         {
             ClearProps(true);
             var instance = NetManager.instance;
-            var counter = 0;
             var buildingInfo = ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo;
-            if (!(buildingInfo?.GetAI() is CargoStationAI || buildingInfo?.GetAI() is DepotAI ||
-                  buildingInfo?.GetAI() is FishingHarborAI))
+            TransportInfo primaryTransport;
+            TransportInfo secondaryTransport;
+            bool canInvertPrimary;
+            bool canInvertSecondary;
+            if (buildingInfo?.GetAI() is CargoStationAI cargoStationAI)
+            {
+                primaryTransport = cargoStationAI.m_transportInfo;
+                secondaryTransport = cargoStationAI.m_transportInfo2;
+                canInvertPrimary = cargoStationAI.m_canInvertTarget;
+                canInvertSecondary = cargoStationAI.m_canInvertTarget2;
+            } 
+            else if (buildingInfo?.GetAI() is DepotAI depotAI)
+            {
+                primaryTransport = depotAI.m_transportInfo;
+                secondaryTransport = depotAI.m_secondaryTransportInfo;
+                canInvertPrimary = depotAI.m_canInvertTarget;
+                canInvertSecondary = depotAI.m_canInvertTarget2;
+            }
+            else if (buildingInfo?.GetAI() is FishingHarborAI)
+            {
+                primaryTransport = null;
+                secondaryTransport = null;
+                canInvertPrimary = true;
+                canInvertSecondary = false;
+            }
+            else
             {
                 return;
             }
+            
+            int fishingDockwayCounter = 0;
             foreach (var netSegment in instance.m_segments.m_buffer)
             {
                 if (netSegment.m_flags == NetSegment.Flags.None || netSegment.Info == null)
@@ -127,33 +154,53 @@ namespace AdvancedBuildingsEditor
                 var endNode = instance.m_nodes.m_buffer[netSegment.m_endNode].m_position;
                 var middle = new Vector3((startNode.x + endNode.x) / 2, (startNode.y + endNode.y) / 2, (startNode.z + endNode.z) / 2);
                 var name = netSegment.Info.name;
-                if (name == "Bus Station Way")
+                if (name == "Fishing Dockway")
+                {
+                    if (fishingDockwayCounter == 0)
+                    {
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle + new Vector3(-0.5f, 0.0f));
+                        fishingDockwayCounter++;
+                    }
+                    else
+                    {
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, middle);  
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, middle + new Vector3(-0.5f, 0.0f));
+                        fishingDockwayCounter++;
+                    }
+                    continue;
+                }
+                
+                
+                if (name is "Bus Station Way" or "Ferry Dockway" or "Ship Dockway" or "Airplane Taxiway")
                 {
                     continue;
                 }
+
                 if (!name.Contains("Station")
-                    && name != "Airplane Stop" && name != "Blimp Stop" && name != "Helicopter Stop" 
-                    && !name.Contains("Train Cargo Track") && name != "Airplane Cargo Stop" 
-                    && !(buildingInfo?.GetAI() is CargoHarborAI && name.Contains("Ferry Path")) 
-                    &&  name != "Ferry Dock" && name != "Ship Dock"
+                    && name != "Airplane Stop" && name != "Blimp Stop" && name != "Helicopter Stop"
+                    && !name.Contains("Train Cargo Track") && name != "Airplane Cargo Stop"
+                    && !(buildingInfo?.GetAI() is CargoHarborAI && name.Contains("Ferry Path"))
+                    && name != "Ferry Dock" && name != "Ship Dock"
                 )
-                    continue; //TODO: handle fishing
-                //TODO: provide a more generic solution that could work with passenger hubs too (using transport info)
-                if (name.Contains("Train Cargo Track") && counter > 0)
                 {
-                    if (counter == 1)
-                    {
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle + new Vector3(-0.5f, 0.0f));
-                    }
+                    continue;
                 }
-                else
+                if (primaryTransport != null && (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) != VehicleInfo.VehicleType.None)
                 {
+                    var targetOffset = canInvertPrimary ? new Vector3(-0.5f, 0.0f) : Vector3.zero;
                     CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle + new Vector3(-0.5f, 0.0f));
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle + targetOffset);
                 }
 
-                counter++;
+                if (secondaryTransport != null
+                    && (netSegment.Info.m_vehicleTypes & secondaryTransport.m_vehicleType) !=  VehicleInfo.VehicleType.None
+                    && (primaryTransport == null || (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) == VehicleInfo.VehicleType.None))
+                {
+                    var targetOffset = canInvertSecondary ? new Vector3(-0.5f, 0.0f) : Vector3.zero;
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle + targetOffset);
+                }
             }
         }
 

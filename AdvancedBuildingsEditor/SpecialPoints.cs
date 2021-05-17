@@ -98,7 +98,7 @@ namespace AdvancedBuildingsEditor
             if (buildingInfo.m_buildingAI is DepotAI)
             {
                 if (pointType != SpecialPointType.SpawnPointTarget &&
-                    pointType != SpecialPointType.SpawnPointPosition&&
+                    pointType != SpecialPointType.SpawnPointPosition &&
                     pointType != SpecialPointType.SpawnPoint2Position &&
                     pointType != SpecialPointType.SpawnPoint2Target)
                 {
