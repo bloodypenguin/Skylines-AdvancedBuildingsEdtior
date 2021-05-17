@@ -156,6 +156,7 @@ namespace AdvancedBuildingsEditor
 
                 var direction = (endNode - startNode).normalized;
                 var target = position + direction * 0.5f;
+                var invertedTarget =  position - direction * 0.5f;
 
 
                 var name = netSegment.Info.name;
@@ -165,13 +166,13 @@ namespace AdvancedBuildingsEditor
                     if (fishingDockwayCounter == 0)
                     {
                         CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, position);
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, canInvertPrimary ? target : position);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, target);
                         fishingDockwayCounter++;
                     }
                     else
                     {
                         CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, position);  
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, canInvertSecondary ? target : position);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, target);
                         fishingDockwayCounter++;
                     }
                     continue;
@@ -192,10 +193,13 @@ namespace AdvancedBuildingsEditor
                 {
                     continue;
                 }
+
+                var oneWay = netSegment.Info.m_hasForwardVehicleLanes != netSegment.Info.m_hasBackwardVehicleLanes;
+                var airplaneTrack = name is "Airplane Stop" or "Airplane Cargo Stop";
                 if (primaryTransport != null && (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) != VehicleInfo.VehicleType.None)
                 {
                     CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, position);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, target);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, (canInvertPrimary && !oneWay && !airplaneTrack) ? invertedTarget : target);
                 }
 
                 if (secondaryTransport != null
@@ -203,7 +207,7 @@ namespace AdvancedBuildingsEditor
                     && (primaryTransport == null || (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) == VehicleInfo.VehicleType.None))
                 {
                     CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, position);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, target);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, (canInvertSecondary && !oneWay && !airplaneTrack) ? invertedTarget : target);
                 }
             }
         }
