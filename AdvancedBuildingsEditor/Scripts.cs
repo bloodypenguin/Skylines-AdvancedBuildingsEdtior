@@ -152,21 +152,26 @@ namespace AdvancedBuildingsEditor
                 }
                 var startNode = instance.m_nodes.m_buffer[netSegment.m_startNode].m_position;
                 var endNode = instance.m_nodes.m_buffer[netSegment.m_endNode].m_position;
-                var middle = new Vector3((startNode.x + endNode.x) / 2, (startNode.y + endNode.y) / 2, (startNode.z + endNode.z) / 2);
+                var position = new Vector3((startNode.x + endNode.x) / 2, (startNode.y + endNode.y) / 2, (startNode.z + endNode.z) / 2);
+
+                var direction = (endNode - startNode).normalized;
+                var target = position + direction * 0.5f;
+
+
                 var name = netSegment.Info.name;
                 
                 if (name == "Fishing Dockway")
                 {
                     if (fishingDockwayCounter == 0)
                     {
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle + new Vector3(-0.5f, 0.0f));
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, position);
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, canInvertPrimary ? target : position);
                         fishingDockwayCounter++;
                     }
                     else
                     {
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, middle);  
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, middle + new Vector3(-0.5f, 0.0f));
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, position);  
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, canInvertSecondary ? target : position);
                         fishingDockwayCounter++;
                     }
                     continue;
@@ -189,18 +194,16 @@ namespace AdvancedBuildingsEditor
                 }
                 if (primaryTransport != null && (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) != VehicleInfo.VehicleType.None)
                 {
-                    var targetOffset = canInvertPrimary ? new Vector3(-0.5f, 0.0f) : Vector3.zero;
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, middle);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, middle + targetOffset);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, position);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, target);
                 }
 
                 if (secondaryTransport != null
                     && (netSegment.Info.m_vehicleTypes & secondaryTransport.m_vehicleType) !=  VehicleInfo.VehicleType.None
                     && (primaryTransport == null || (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) == VehicleInfo.VehicleType.None))
                 {
-                    var targetOffset = canInvertSecondary ? new Vector3(-0.5f, 0.0f) : Vector3.zero;
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, middle);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, middle + targetOffset);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, position);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, target);
                 }
             }
         }
