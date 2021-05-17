@@ -402,10 +402,7 @@ namespace AdvancedBuildingsEditor.Detours
                     }
                     for (var index = 0; index < mSpawnPoints.Length; ++index)
                     {
-                        if (ai.m_canInvertTarget)
-                        {
-                            PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_position, SpecialPointType.SpawnPointPosition);
-                        }
+                        PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_position, SpecialPointType.SpawnPointPosition);
                         PlaceSpecialPoint(info, matrix4x4, mSpawnPoints[index].m_target, SpecialPointType.SpawnPointTarget);
                     }
                 }
@@ -425,10 +422,7 @@ namespace AdvancedBuildingsEditor.Detours
                     }
                     for (var index = 0; index < mSpawnPoints2.Length; ++index)
                     {
-                        if (ai.m_canInvertTarget2)
-                        {
-                            PlaceSpecialPoint(info, matrix4x4, mSpawnPoints2[index].m_position, SpecialPointType.SpawnPoint2Position);
-                        }
+                        PlaceSpecialPoint(info, matrix4x4, mSpawnPoints2[index].m_position, SpecialPointType.SpawnPoint2Position);
                         PlaceSpecialPoint(info, matrix4x4, mSpawnPoints2[index].m_target, SpecialPointType.SpawnPoint2Target);
                     }   
                 }
