@@ -34,10 +34,21 @@ namespace AdvancedBuildingsEditor
                 "Pedestrian Connection Underground",
                 "Cargo Connection",
                 "Ferry Path",
+                "Ferry Dock",
+                "Ferry Dockway",
+                "Fishing Dockway",
+                "Helicopter Path",
+                "Helicopter Stop",
+                "Blimp Path",
+                "Blimp Stop"
             };
             foreach (var prefabName in prefabNames)
             {
                 var prefab = PrefabCollection<NetInfo>.FindLoaded(prefabName);
+                if (prefab == null)
+                {
+                    continue;
+                }
                 if ("Cargo Connection".Equals(prefabName))
                 {
                     prefab.m_hasForwardVehicleLanes = true;
