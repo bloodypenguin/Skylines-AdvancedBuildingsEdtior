@@ -120,47 +120,47 @@ namespace AdvancedBuildingsEditor.Detours
                             var globalPosition = matrix4x4_1.MultiplyPoint(position);
                             switch (specialPoints[index])
                             {
-                                case SpecialPointType.SpawnPointTarget:
+                                case SpecialPointType.SpawnPointPosition:
                                     {
                                         var calculatedPositionGlobalPosition = 
-                                            FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointPosition, instance1, position, globalPosition, matrix4x4_1);
+                                            FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPointTarget, instance1, position, globalPosition, matrix4x4_1);
                                         spawnPoints.Add(new DepotAI.SpawnPoint()
                                         {
-                                            m_position = calculatedPositionGlobalPosition.MirrorZ(),
-                                            m_target = globalPosition.MirrorZ(),
+                                            m_position = globalPosition.MirrorZ(),
+                                            m_target = calculatedPositionGlobalPosition.MirrorZ(),
                                         });
                                         break;
                                     }
-                                case SpecialPointType.SpawnPoint2Target:
+                                case SpecialPointType.SpawnPoint2Position:
                                     {
                                         if (depotAI != null || cargoStationAI != null)
                                         {
                                             var calculatedPositionGlobalPosition = 
-                                                FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPoint2Position, instance1, position, globalPosition, matrix4x4_1);
+                                                FindClosestPositionPoint(specialPoints, SpecialPointType.SpawnPoint2Target, instance1, position, globalPosition, matrix4x4_1);
                                             spawnPoints2.Add(new DepotAI.SpawnPoint()
                                             {
-                                                m_position = calculatedPositionGlobalPosition.MirrorZ(),
-                                                m_target = globalPosition.MirrorZ(),
+                                                m_position = globalPosition.MirrorZ(),
+                                                m_target = calculatedPositionGlobalPosition.MirrorZ(),
                                             });                                            
                                         }
                                         break;
                                     }
                                 case SpecialPointType.DespawnPointPosition:
-                                {
-                                    if (fishingHarborAI != null)
                                     {
-                                        unspawnPosition = globalPosition.MirrorZ();
+                                        if (fishingHarborAI != null)
+                                        {
+                                            unspawnPosition = globalPosition.MirrorZ();
+                                        }
+                                        break;
                                     }
-                                    break;
-                                }
                                 case SpecialPointType.DespawnPointTarget:
-                                {
-                                    if (fishingHarborAI != null)
                                     {
-                                        unspawnTarget = globalPosition.MirrorZ();
+                                        if (fishingHarborAI != null)
+                                        {
+                                            unspawnTarget = globalPosition.MirrorZ();
+                                        }
+                                        break;
                                     }
-                                    break;
-                                }
                                 case SpecialPointType.TruckSpawnPosition:
                                     {
                                         if (cargoStationAI != null)
