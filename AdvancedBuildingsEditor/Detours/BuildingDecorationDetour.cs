@@ -304,7 +304,7 @@ namespace AdvancedBuildingsEditor.Detours
                         }
                         else
                         {
-                            UnityEngine.Debug.LogError("Too many spawn points 1!"); //TODO: don't allow to place
+                            UnityEngine.Debug.LogError("Too many spawn points 1!");
                         }     
                     }
                     else
@@ -327,7 +327,7 @@ namespace AdvancedBuildingsEditor.Detours
                         }
                         else
                         {
-                            UnityEngine.Debug.LogError("Too many spawn points 2!"); //TODO: don't allow to place
+                            UnityEngine.Debug.LogError("Too many spawn points 2!");
                         } 
                     }
                     else
@@ -342,7 +342,33 @@ namespace AdvancedBuildingsEditor.Detours
 
             if (fishingHarborAI != null)
             {
-                //TODO: add handling of fishing harbor                
+                if (OptionsWrapper<Options>.Options.PreciseSpecialPointsPostions)
+                {
+                    var ai = (FishingHarborAI)((BuildingInfo)ToolsModifierControl.toolController.m_editPrefabInfo).m_buildingAI;
+                    fishingHarborAI.m_boatSpawnPosition = ai.m_boatSpawnPosition;
+                    fishingHarborAI.m_boatSpawnTarget = ai.m_boatSpawnTarget;
+                    fishingHarborAI.m_boatUnspawnPosition = ai.m_boatUnspawnPosition;
+                    fishingHarborAI.m_boatUnspawnTarget = ai.m_boatUnspawnTarget;
+                }
+                else
+                {
+                    if (spawnPoints.Count == 1)
+                    {
+                        fishingHarborAI.m_boatSpawnPosition = spawnPoints[0].m_position;
+                        fishingHarborAI.m_boatSpawnTarget = spawnPoints[0].m_target;
+                    }
+                    else if (spawnPoints.Count == 0)
+                    {
+                        fishingHarborAI.m_boatSpawnPosition = Vector3.zero;
+                        fishingHarborAI.m_boatUnspawnPosition = Vector3.zero;
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogError("Can be only 1 spawn point!");
+                    }  
+                    fishingHarborAI.m_boatUnspawnPosition = unspawnPosition;
+                    fishingHarborAI.m_boatUnspawnTarget = unspawnTarget;
+                }            
             }
             //end mod
             TreeManager instance2 = Singleton<TreeManager>.instance;
