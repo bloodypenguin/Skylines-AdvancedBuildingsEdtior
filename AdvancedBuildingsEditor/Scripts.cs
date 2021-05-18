@@ -172,7 +172,7 @@ namespace AdvancedBuildingsEditor
                     }
                     else
                     {
-                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, position);  
+                        CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointPosition, position);  
                         CreateSpecialPoint(buildingInfo, SpecialPointType.DespawnPointTarget, target);
                         fishingDockwayCounter++;
                     }

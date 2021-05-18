@@ -26,7 +26,7 @@ namespace AdvancedBuildingsEditor
             this.relativePosition = new Vector3(10f, 10f);
             UILabel uiLabel = this.AddUIComponent<UILabel>();
             uiLabel.name = "Title";
-            uiLabel.text = "Advanced Buildings Editor";
+            uiLabel.text = "Advanced Building Editor";
             uiLabel.textAlignment = UIHorizontalAlignment.Center;
             uiLabel.position = new Vector3((float)((double)this.width / 2.0 - (double)uiLabel.width / 2.0), (float)((double)uiLabel.height / 2.0 - 20.0));
             UIPanel uiPanel1 = this.AddUIComponent<UIPanel>();
