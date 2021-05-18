@@ -232,7 +232,7 @@ namespace AdvancedBuildingsEditor
             {
                 return;
             }
-            if (!SpecialPoints.IsAppropriatePointType(buildingInfo, pointType))
+            if (SpecialPoints.GetMaxNumberOfPoints(buildingInfo, pointType) < 1)
             {
                 return;
             }

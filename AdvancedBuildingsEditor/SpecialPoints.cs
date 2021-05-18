@@ -21,6 +21,13 @@ namespace AdvancedBuildingsEditor
                 Where(propInstance => propInstance.m_flags != 0).
                 Count(propInstance => GetSpecialPointType(propInstance.Info) != SpecialPointType.Unknown);
         }
+        
+        public static int CountSpecialPoints(SpecialPointType pointType)
+        {
+            return PropManager.instance.m_props.m_buffer.
+                Where(propInstance => propInstance.m_flags != 0).
+                Count(propInstance => GetSpecialPointType(propInstance.Info) == pointType);
+        }
 
         public static SpecialPointType GetSpecialPointType(PropInfo info)
         {
@@ -89,11 +96,11 @@ namespace AdvancedBuildingsEditor
             }
         }
 
-        public static bool IsAppropriatePointType(BuildingInfo buildingInfo, SpecialPointType pointType)
+        public static int GetMaxNumberOfPoints(BuildingInfo buildingInfo, SpecialPointType pointType)
         {
             if (buildingInfo == null || pointType == SpecialPointType.Unknown)
             {
-                return false;
+                return 0;
             }
             if (buildingInfo.m_buildingAI is DepotAI)
             {
@@ -102,8 +109,10 @@ namespace AdvancedBuildingsEditor
                     pointType != SpecialPointType.SpawnPoint2Position &&
                     pointType != SpecialPointType.SpawnPoint2Target)
                 {
-                    return false;
+                    return 0;
                 }
+
+                return 9999;
             }
             else if (buildingInfo.m_buildingAI is CargoStationAI)
             {
@@ -114,8 +123,10 @@ namespace AdvancedBuildingsEditor
                     pointType != SpecialPointType.TruckSpawnPosition &&
                     pointType != SpecialPointType.TruckDespawnPosition)
                 {
-                    return false;
+                    return 0;
                 }
+
+                return 1;
             }
             else if (buildingInfo.m_buildingAI is FishingHarborAI)
             {
@@ -124,14 +135,13 @@ namespace AdvancedBuildingsEditor
                     pointType != SpecialPointType.DespawnPointTarget &&
                     pointType != SpecialPointType.DespawnPointPosition)
                 {
-                    return false;
+                    return 0;
                 }
+
+                return 1;
             }
-            else
-            {
-                return false;
-            }
-            return true;
+
+            return 0;
         }
     }
 }
