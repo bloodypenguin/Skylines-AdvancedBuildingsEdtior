@@ -64,7 +64,7 @@ namespace AdvancedBuildingsEditor
                 });
             };
 
-            var clearSpecialPointsButton = UIUtil.CreateButton(this, "Clear special points");
+            var clearSpecialPointsButton = UIUtil.CreateButton(this, "Clear spawn points");
             clearSpecialPointsButton.relativePosition = new Vector3(5, 92);
             clearSpecialPointsButton.eventClicked += (component, param) =>
             {
