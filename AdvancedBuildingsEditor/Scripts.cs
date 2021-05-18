@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AdvancedBuildingsEditor.Detours;
 using ColossalFramework;
 using ColossalFramework.Math;
@@ -198,18 +199,29 @@ namespace AdvancedBuildingsEditor
                 var airplaneTrack = name is "Airplane Stop" or "Airplane Cargo Stop";
                 if (primaryTransport != null && (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) != VehicleInfo.VehicleType.None)
                 {
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, position);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, (canInvertPrimary && !oneWay && !airplaneTrack) ? invertedTarget : target);
+                    var minimumVerticalOffset = MinimumVerticalOffset(netSegment, primaryTransport);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointPosition, position + minimumVerticalOffset);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPointTarget, 
+                        ((canInvertPrimary && !oneWay && !airplaneTrack) ? invertedTarget : target) + minimumVerticalOffset);
                 }
-
                 if (secondaryTransport != null
                     && (netSegment.Info.m_vehicleTypes & secondaryTransport.m_vehicleType) !=  VehicleInfo.VehicleType.None
                     && (primaryTransport == null || (netSegment.Info.m_vehicleTypes & primaryTransport.m_vehicleType) == VehicleInfo.VehicleType.None))
                 {
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, position);
-                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, (canInvertSecondary && !oneWay && !airplaneTrack) ? invertedTarget : target);
+                    var minimumVerticalOffset = MinimumVerticalOffset(netSegment, secondaryTransport);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Position, position + minimumVerticalOffset);
+                    CreateSpecialPoint(buildingInfo, SpecialPointType.SpawnPoint2Target, 
+                        ((canInvertSecondary && !oneWay && !airplaneTrack) ? invertedTarget : target) + minimumVerticalOffset);
                 }
             }
+        }
+
+        private static Vector3 MinimumVerticalOffset(NetSegment netSegment, TransportInfo secondaryTransport)
+        {
+            return new Vector3(0, netSegment.Info.m_lanes
+                .Where(l => l.m_vehicleType == secondaryTransport.m_vehicleType)
+                .Select(l => l.m_verticalOffset)
+                .Min(), 0);
         }
 
 
