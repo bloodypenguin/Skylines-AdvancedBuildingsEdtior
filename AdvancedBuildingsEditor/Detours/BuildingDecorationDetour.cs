@@ -147,7 +147,7 @@ namespace AdvancedBuildingsEditor.Detours
                                 }
                                 case SpecialPointType.DespawnPointTarget:
                                 {
-                                    if (cargoStationAI != null)
+                                    if (fishingHarborAI != null)
                                     {
                                         unspawnTarget = globalPosition.MirrorZ();
                                     }
