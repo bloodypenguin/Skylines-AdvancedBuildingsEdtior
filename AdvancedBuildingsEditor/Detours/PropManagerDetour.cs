@@ -20,9 +20,11 @@ namespace AdvancedBuildingsEditor.Detours
                 var pointType = SpecialPoints.GetSpecialPointType(propTool.m_prefab);
                 if (pointType != SpecialPointType.Unknown)
                 {
-                    //TODO: performance (cache count)
-                    return SpecialPoints.CountSpecialPoints(pointType) < 
-                           SpecialPoints.GetMaxNumberOfPoints(ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo, pointType);
+                    if (!Panel.specialPointTypeCount.TryGetValue(pointType, out var pointTypeCount))
+                    {
+                        pointTypeCount = 9999;
+                    }
+                    return pointTypeCount < SpecialPoints.GetMaxNumberOfPoints(ToolsModifierControl.toolController.m_editPrefabInfo as BuildingInfo, pointType);  
                 }
             }
             //end mod

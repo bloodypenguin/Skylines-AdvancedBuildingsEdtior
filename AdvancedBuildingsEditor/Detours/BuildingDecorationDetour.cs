@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AdvancedBuildingsEditor.OptionsFramework;
 using AdvancedBuildingsEditor.Redirection;
@@ -48,7 +49,14 @@ namespace AdvancedBuildingsEditor.Detours
             BuildingDecoration.LoadPaths(source, (ushort)0, ref data, 0.0f);
             BuildingDecoration.LoadProps(source, (ushort)0, ref data);
             //begin mod
-            LoadSpecialPoints((source), (ushort)0, ref data);
+            try
+            {
+                LoadSpecialPoints((source), (ushort) 0, ref data);
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogException(e);
+            }
             //end mod
         }
 

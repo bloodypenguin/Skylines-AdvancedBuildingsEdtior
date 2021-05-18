@@ -1,4 +1,5 @@
-﻿using AdvancedBuildingsEditor.Detours;
+﻿using System.Collections.Generic;
+using AdvancedBuildingsEditor.Detours;
 using ColossalFramework.UI;
 using UnityEngine;
 
@@ -7,9 +8,14 @@ namespace AdvancedBuildingsEditor
     public class Panel : UIPanel
     {
 
+        private PropInfo cachedPropToolProp = null;
+        private int cachedPropCount = -1;
+        public static Dictionary<SpecialPointType, int> specialPointTypeCount = new();
         public override void Start()
         {
             base.Start();
+            specialPointTypeCount = new Dictionary<SpecialPointType, int>();
+            cachedPropCount = -1;
             this.name = "AdvancedBuildingsEditor";
             this.width = 230f;
             this.height = 222f;
@@ -129,17 +135,37 @@ namespace AdvancedBuildingsEditor
         public override void Update()
         {
             isVisible = ToolsModifierControl.toolController.m_editPrefabInfo is BuildingInfo;
-            if (isVisible)
+            if (!isVisible)
             {
-                if (Input.GetKey(KeyCode.Escape))
+                cachedPropCount = -1;
+                cachedPropToolProp = null;
+                return;
+            }
+
+            var propTool = ToolsModifierControl.toolController.CurrentTool as PropTool;
+            if (propTool == null)
+            {
+                cachedPropToolProp = null;
+            }
+            else if (cachedPropToolProp != propTool.m_prefab || cachedPropCount != PropManager.instance.m_propCount)
+            {
+                var specialPointType = SpecialPoints.GetSpecialPointType(propTool.m_prefab);
+                if (specialPointType != SpecialPointType.Unknown)
                 {
-                    if (ToolsModifierControl.GetCurrentTool<BuildingTool>() == null)
-                    {
-                        return;
-                    }
-                    ToolsModifierControl.SetTool<DefaultTool>();
-                    ToolsModifierControl.GetTool<BuildingTool>().m_prefab = null;
+                    specialPointTypeCount[specialPointType] = SpecialPoints.CountSpecialPoints(specialPointType);
                 }
+                cachedPropToolProp = propTool.m_prefab;
+                cachedPropCount = PropManager.instance.m_propCount;
+            }
+            
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                if (ToolsModifierControl.GetCurrentTool<BuildingTool>() == null)
+                {
+                    return;
+                }
+                ToolsModifierControl.SetTool<DefaultTool>();
+                ToolsModifierControl.GetTool<BuildingTool>().m_prefab = null;
             }
         }
     }
