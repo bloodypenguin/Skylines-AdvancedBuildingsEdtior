@@ -29,6 +29,11 @@ namespace AdvancedBuildingsEditor
             uiLabel.text = "Advanced Building Editor";
             uiLabel.textAlignment = UIHorizontalAlignment.Center;
             uiLabel.position = new Vector3((float)((double)this.width / 2.0 - (double)uiLabel.width / 2.0), (float)((double)uiLabel.height / 2.0 - 20.0));
+            UIDragHandle uiDragHandle1 = this.AddUIComponent<UIDragHandle>();
+            uiDragHandle1.width = this.width;
+            uiDragHandle1.height = this.height;
+            uiDragHandle1.target = this;
+            uiDragHandle1.relativePosition = new Vector3(0f, 0f);
             UIPanel uiPanel1 = this.AddUIComponent<UIPanel>();
             uiPanel1.anchor = UIAnchorStyle.Top | UIAnchorStyle.Left | UIAnchorStyle.Right;
             uiPanel1.transform.localPosition = Vector3.zero;
@@ -60,7 +65,8 @@ namespace AdvancedBuildingsEditor
             {
                 Scripts.BulldozePedestrianConnections();
             };
-            var seButton = UIUtil.CreateButton(this, "Make All Segments Editable");
+//            var seButton = UIUtil.CreateButton(this, "Make All Segments Editable");
+            var seButton = UIUtil.CreateButton(this, "Unlock All Segments");
             seButton.relativePosition = new Vector3(5, 66);
             seButton.eventClick += (comp, param) =>
             {
